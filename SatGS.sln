@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32526.322
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SatGS", "SatGS\SatGS.csproj", "{4D5A62B1-0473-4A31-BA97-D1E36AFA254F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4D5A62B1-0473-4A31-BA97-D1E36AFA254F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D5A62B1-0473-4A31-BA97-D1E36AFA254F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D5A62B1-0473-4A31-BA97-D1E36AFA254F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D5A62B1-0473-4A31-BA97-D1E36AFA254F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5EC1F566-6200-4B28-B8C2-E142ECC59248}
+	EndGlobalSection
+EndGlobal
