@@ -1,13 +1,11 @@
 # SatGS - 캔 위성 지상국 프로그램
 
 ## 개요
-#
 캔 위성의 데이터 수신을 위한 지상국 소프트웨어  
 
 <br/>
 
 ## Used Library
-#
 |Library|Description|Product Page|
 |-------|-----------|------------|
 |HelixToolkit|위성의 현재 상태를 전시하기 위한 3D공간 생성 및 Object Drawing|[Link](https://github.com/helix-toolkit/helix-toolkit)|
@@ -17,7 +15,6 @@
 <br/>
 
 ## Contact
-#
 |Department|Name|Mail Address|
 |----------|----|------------|
 |Can Satelite|Yubeen Jo|jybin00@korea.ac.kr|
@@ -27,7 +24,6 @@
 <br/>
 
 ## License
-# 
 Copyright (c) Cande, YEGU KWON. All rights reserved.
 
 Licensed under the [MIT](LICENSE) license.
