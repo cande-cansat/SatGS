@@ -16,7 +16,7 @@ namespace SatGS.Model
         {
             this.X = x;
             this.Y = y;
-            this.Z = z; 
+            this.Z = z;
         }
 
         public Vec3(Vec3 vec3)
@@ -25,7 +25,7 @@ namespace SatGS.Model
             this.Y = vec3.Y;
             this.Z = vec3.Z;
         }
-        
+
         public Vec3(float x, float y) {
             this.X = x;
             this.Y = y;
@@ -37,6 +37,5 @@ namespace SatGS.Model
             this.Y = vec2.Y;
             this.Z = 0;
         }
-
     }
 }
