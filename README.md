@@ -1,4 +1,4 @@
-# SatGS - 캔 위성 지상국 프로그램
+# SatGS - Can Satelite Ground System
 
 ## 개요
 캔 위성의 데이터 수신을 위한 지상국 소프트웨어  
