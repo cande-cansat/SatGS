@@ -399,3 +399,6 @@ FodyWeavers.xsd
 
 # Config files
 *.cfg
+
+# DNN Weight  files
+*.weights
