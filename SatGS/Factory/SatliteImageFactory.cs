@@ -46,7 +46,6 @@ namespace SatGS.Factory
             GC.Collect(0, GCCollectionMode.Forced);
             GC.WaitForFullGCComplete();
 
-
             return image;
         }
     }
