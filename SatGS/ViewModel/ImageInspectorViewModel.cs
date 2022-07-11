@@ -14,14 +14,15 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using SatGS.Model;
+using SatGS.OpenCV;
 using SatGS.Socket;
 
 namespace SatGS.ViewModel
 {
     internal class ImageInspectorViewModel : NotifyPropertyChanged
     {
-        private BitmapImage currentImage;
-        public BitmapImage CurrentImage
+        private BitmapSource currentImage;
+        public BitmapSource CurrentImage
         {
             get => currentImage;
             set
@@ -33,6 +34,7 @@ namespace SatGS.ViewModel
         public ObservableCollection<ImagePath> Images { get; }
 
         private Receiver receiver;
+        private OpenCV.OpenCV openCv;
 
         public ImageInspectorViewModel()
         {
@@ -42,17 +44,30 @@ namespace SatGS.ViewModel
                 Directory.CreateDirectory("Images");
             else
             {
-                var directory = new DirectoryInfo(@".\Images\");
-                var masks = new[] { "*.png", "*.jpg", "jpeg" };
-                var files = masks.SelectMany(directory.EnumerateFiles);
+                string[] directories = File.ReadAllLines(
+#if DEBUG
+                    "../../ImagePath.cfg"
+#else
+                    "ImagePath.cfg"
+#endif
+                    );
 
-                foreach (var file in files)
-                    Images.Add(new ImagePath(file.FullName));
+                foreach(var dirPath in directories)
+                {
+                    var directory = new DirectoryInfo(dirPath);
+                    var masks = new[] { "*.png", "*.jpg", "jpeg" };
+                    var files = masks.SelectMany(directory.EnumerateFiles);
+
+                    foreach (var file in files)
+                        Images.Add(new ImagePath(file.FullName));
+                }
             }
 
             receiver = Receiver.Instance();
-
             receiver.PacketReceived += PacketReceived;
+
+            openCv = OpenCV.OpenCV.Instance();
+            openCvResults = new Dictionary<string, BitmapSource>();
         }
 
         void PacketReceived(object sender, PacketData e)
@@ -77,10 +92,17 @@ namespace SatGS.ViewModel
           
         }
 
+        private Dictionary<string, BitmapSource> openCvResults;
 
         public void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            CurrentImage = new BitmapImage(new Uri(((ImagePath)e.AddedItems[0]).FullPath));
+            var imgPath = ((ImagePath)e.AddedItems[0]).FullPath;
+
+            if (!openCvResults.ContainsKey(imgPath))
+                //openCvResults.Add(imgPath, openCv.DetectionWithYolo3(imgPath));
+                openCvResults.Add(imgPath, openCv.FindCountour(imgPath));
+            
+            CurrentImage = openCvResults[imgPath];
         }
     }
 }
