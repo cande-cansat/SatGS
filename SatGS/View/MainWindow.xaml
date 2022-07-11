@@ -30,6 +30,7 @@
                                 <local:SatStatusView/>
                             </xcad:LayoutDocument>
                         </xcad:LayoutDocumentPane>
+                        
                         <xcad:LayoutDocumentPane DockHeight="*" DockWidth="*">
                             <xcad:LayoutDocument Title="수신 이미지"
                                                  CanMove="True"
