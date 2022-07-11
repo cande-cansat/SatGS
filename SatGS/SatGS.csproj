@@ -161,9 +161,6 @@
     <None Include="darknet\yolov3.cfg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="darknet\yolov3.weights">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="ImagePath.cfg" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
