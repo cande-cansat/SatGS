@@ -74,6 +74,7 @@ namespace SatGS.Socket
 
             if(error != SocketError.Success)
             {
+                clients.Remove(client);
                 CleanUpClient(client);
                 return;
             }
@@ -103,11 +104,8 @@ namespace SatGS.Socket
         ~Receiver()
         {
             foreach (var client in clients)
-            {
-                if (client.Connected)
-                    client.Client.Disconnect(false);
-                client.Dispose();
-            }
+                CleanUpClient(client);
+            clients.Clear();
             listener.Stop();
         }
     }
