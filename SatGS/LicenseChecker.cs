@@ -14,8 +14,10 @@ namespace SatGS
         {
             string[] licenseFiles =
             {
-                "XceedLicense.cfg",
-                "../../XceedLicense.cfg"
+#if DEBUG
+                "../../XceedLicense.cfg",
+#endif
+                "XceedLicense.cfg"
             };
 
             string LicenseKey = "";
