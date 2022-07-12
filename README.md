@@ -15,7 +15,16 @@
 <br/>
 
 ## Used parts
-
+|Part|Description|
+|----|-----------|
+|RaspberyPi 4B|Compute Module|
+|Arduino|Communication Module|
+|Ardafruit BMP390|Barinetruc Pressure and Altimeter Sensor|
+|AM2302|Temperature and humidity Sensor|
+|NEO-07M|GPS Receiver|
+|SZH-RFBB-033|Adapter Board for nRF24L01 Wireless Module|
+|SZH-RFBB-012|USB Converter Module from USB to nRF24L01|
+|DANT-05SPR-BX|Stand Type Antena for 2.4GHz|
 <br/>
 
 ## Contact
