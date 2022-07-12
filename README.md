@@ -14,6 +14,10 @@
 
 <br/>
 
+## Used parts
+
+<br/>
+
 ## Contact
 |Department|Name|Mail Address|
 |----------|----|------------|
