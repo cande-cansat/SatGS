@@ -33,6 +33,8 @@ namespace SatGS.ViewModel
         }
         public ObservableCollection<ImagePath> Images { get; }
 
+        public bool Checked { get; set; }
+
         private Receiver receiver;
         private OpenCV.OpenCV openCv;
 
@@ -68,6 +70,7 @@ namespace SatGS.ViewModel
 
             openCv = OpenCV.OpenCV.Instance();
             openCvResults = new Dictionary<string, BitmapSource>();
+            yolo3Results = new Dictionary<string, BitmapSource>();
         }
 
         void PacketReceived(object sender, PacketData e)
@@ -93,16 +96,27 @@ namespace SatGS.ViewModel
         }
 
         private Dictionary<string, BitmapSource> openCvResults;
+        private Dictionary<string, BitmapSource> yolo3Results;
 
         public void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var imgPath = ((ImagePath)e.AddedItems[0]).FullPath;
 
-            if (!openCvResults.ContainsKey(imgPath))
-                //openCvResults.Add(imgPath, openCv.DetectionWithYolo3(imgPath));
-                openCvResults.Add(imgPath, openCv.FindCountour(imgPath));
-            
-            CurrentImage = openCvResults[imgPath];
+            if (Checked) // Yolo3
+            {
+                if (!yolo3Results.ContainsKey(imgPath))
+                    yolo3Results.Add(imgPath, openCv.DetectionWithYolo3(imgPath));
+
+                CurrentImage = yolo3Results[imgPath];
+            }
+            else // OpenCV
+            {
+                if (!openCvResults.ContainsKey(imgPath))
+                    //openCvResults.Add(imgPath, openCv.DetectionWithYolo3(imgPath));
+                    openCvResults.Add(imgPath, openCv.FindCountour(imgPath));
+
+                CurrentImage = openCvResults[imgPath];
+            }
         }
     }
 }

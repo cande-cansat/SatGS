@@ -12,38 +12,41 @@
     <UserControl.DataContext>
         <ViewModel:ImageInspectorViewModel/>
     </UserControl.DataContext>
-    <xcad:DockingManager AllowMixedOrientation="True">
-        <xcad:LayoutRoot>
-            <xcad:LayoutPanel>
-                <xcad:LayoutDocumentPaneGroup Orientation="Vertical">
-                    <xcad:LayoutDocumentPane>
-                        <xcad:LayoutDocument Title="이미지"  CanClose="False">
-                            <Image Source="{Binding CurrentImage}"/>
-                        </xcad:LayoutDocument>
-                    </xcad:LayoutDocumentPane>
-                    <xcad:LayoutDocumentPane>
-                        <xcad:LayoutDocument Title="이미지 목록" CanClose="False">
-                            <ListView ItemsSource="{Binding Images}">
-                                <ListView.Resources>
-                                    <Style TargetType="{x:Type GridViewColumnHeader}">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                    </Style>
-                                </ListView.Resources>
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="SelectionChanged">
-                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnSelectionChanged"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn DisplayMemberBinding="{Binding FileName}"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                        </xcad:LayoutDocument>
-                    </xcad:LayoutDocumentPane>
-                </xcad:LayoutDocumentPaneGroup>
-            </xcad:LayoutPanel>
-        </xcad:LayoutRoot>
-    </xcad:DockingManager>
+    <Grid>
+        <CheckBox Content="Yolo3" IsChecked="{Binding Checked}"/>
+        <xcad:DockingManager AllowMixedOrientation="True" Margin="0 17 0 0">
+            <xcad:LayoutRoot>
+                <xcad:LayoutPanel>
+                    <xcad:LayoutDocumentPaneGroup Orientation="Vertical">
+                        <xcad:LayoutDocumentPane>
+                            <xcad:LayoutDocument Title="이미지"  CanClose="False">
+                                <Image Source="{Binding CurrentImage}"/>
+                            </xcad:LayoutDocument>
+                        </xcad:LayoutDocumentPane>
+                        <xcad:LayoutDocumentPane>
+                            <xcad:LayoutDocument Title="이미지 목록" CanClose="False">
+                                <ListView ItemsSource="{Binding Images}">
+                                    <ListView.Resources>
+                                        <Style TargetType="{x:Type GridViewColumnHeader}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </Style>
+                                    </ListView.Resources>
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="SelectionChanged">
+                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnSelectionChanged"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn DisplayMemberBinding="{Binding FileName}"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </xcad:LayoutDocument>
+                        </xcad:LayoutDocumentPane>
+                    </xcad:LayoutDocumentPaneGroup>
+                </xcad:LayoutPanel>
+            </xcad:LayoutRoot>
+        </xcad:DockingManager>
+    </Grid>
 </UserControl>
