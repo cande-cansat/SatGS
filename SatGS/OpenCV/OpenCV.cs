@@ -143,7 +143,7 @@ namespace SatGS.OpenCV
             // GrayScale Image to Binary Image
             Cv2.Threshold(grayImage, binaryImage, 100, 255, ThresholdTypes.Binary);
 
-            Cv2.ImShow("a", binaryImage);
+            //Cv2.ImShow("a", binaryImage);
 
             Cv2.FindContours(binaryImage, out var contours, out var hierachy, RetrievalModes.Tree, ContourApproximationModes.ApproxTC89KCOS);
 
