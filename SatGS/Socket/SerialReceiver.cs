@@ -121,7 +121,7 @@ namespace SatGS.Socket
 
                     var status = Factory.SatliteStatusFactory.Create2(payload);
 
-                    DebugConsole.WriteLine($"Serial Received:\n\tPitch: {status.Pitch}\n\tRoll: {status.Roll}\n\tYaw: {status.Yaw}");
+                    DebugConsole.WriteLine($"Serial Received:\n\tRoll: {status.Roll}\n\tPitch: {status.Pitch}\n\tYaw: {status.Yaw}");
                 }
             }
             catch(Exception ex)
