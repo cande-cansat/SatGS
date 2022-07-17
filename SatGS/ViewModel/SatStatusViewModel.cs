@@ -16,25 +16,6 @@ namespace SatGS.ViewModel
 {
     internal class SatStatusViewModel : Model.NotifyPropertyChanged
     {
-        // roll, pitch, yaw 값을 quaternion값으로 변경 -> 위성의 현재 기울기 전시 가능
-        private Media3D.Quaternion ToQuaternion(Model.Vec3 v)
-        {
-            float cy = (float)Math.Cos(v.Z * 0.5);
-            float sy = (float)Math.Sin(v.Z * 0.5);
-            float cp = (float)Math.Cos(v.Y * 0.5);
-            float sp = (float)Math.Sin(v.Y * 0.5);
-            float cr = (float)Math.Cos(v.X * 0.5);
-            float sr = (float)Math.Sin(v.X * 0.5);
-
-            return new Media3D.Quaternion
-            {
-                W = (cr * cp * cy + sr * sp * sy),
-                X = (sr * cp * cy - cr * sp * sy),
-                Y = (cr * sp * cy + sr * cp * sy),
-                Z = (cr * cp * sy - sr * sp * cy)
-            };
-        }
-
         private string information;
         public string Information 
         {
