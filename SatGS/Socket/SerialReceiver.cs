@@ -111,7 +111,7 @@ namespace SatGS.Socket
                 */
 
                 var recv = serial.ReadExisting().ToList();
-                recv.ForEach(c => ReceivingBuffer.Enqueue((byte)c));
+                recv.ForEach(c => ReceivingBuffer.Enqueue(Convert.ToByte(c)));
                 
                 while(ReceivingBuffer.Count >= 20)
                 {
