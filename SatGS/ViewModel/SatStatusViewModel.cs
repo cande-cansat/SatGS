@@ -52,7 +52,7 @@ namespace SatGS.ViewModel
             serialReceiver.PacketReceived += SerialPacketReceived;
         }
 
-        private void SerialPacketReceived(object sender, PacketData e)
+        private void SerialPacketReceived(object sender, byte[] e)
         {
             var status = Factory.SatliteStatusFactory.Create2(e);
 
@@ -63,9 +63,9 @@ namespace SatGS.ViewModel
             });
         }
 
-        private void TcpPacketReceived(object sender, PacketData e)
+        private void TcpPacketReceived(object sender, byte[] e)
         {
-            if (e.Data[0] != 0) return;
+            if (e[0] != 0) return;
 
             var status = Factory.SatliteStatusFactory.Create1(e);
             //var quat = ToQuaternion(status.Rotation);

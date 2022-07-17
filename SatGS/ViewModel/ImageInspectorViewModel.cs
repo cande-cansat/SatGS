@@ -73,9 +73,9 @@ namespace SatGS.ViewModel
             yolo3Results = new Dictionary<string, BitmapSource>();
         }
 
-        void PacketReceived(object sender, PacketData e)
+        void PacketReceived(object sender, byte[] e)
         {
-            if (e.Data[0] != 1) return;
+            if (e[0] != 1) return;
 
             var image = Factory.SatliteImageFactory.Create(e);
 

@@ -21,7 +21,7 @@ namespace SatGS.Socket
         }
 
         SerialPort serial;
-        const int BufferSize = 32;
+        const int BufferSize = 20;
 
         Dictionary<string, string> GetSerialPortInfos()
         {
@@ -72,6 +72,7 @@ namespace SatGS.Socket
             try
             {
                 serial = new SerialPort(port);
+                serial.BaudRate = 115200;
                 serial.Open();
                 IsOpen = true;
                 serial.DataReceived += DataReceived;
@@ -80,20 +81,48 @@ namespace SatGS.Socket
             {
                 MessageBox.Show(e.Message);
             }
+
+            
         }
+
+        Queue<byte> ReceivingBuffer;
 
         private void DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             var serial = (SerialPort)sender;
-            var buffer = new byte[BufferSize];
+            //var buffer = new byte[BufferSize];
+            
             try
             {
+                /*
                 var recvLen = serial.Read(buffer, 0, BufferSize);
+                if (recvLen <= 0) return;
                 PacketReceived?.Invoke(this, new PacketData()
                 {
                     Length = recvLen,
                     Data = buffer
                 });
+                var status = Factory.SatliteStatusFactory.Create2(new PacketData()
+                {
+                    Length = recvLen,
+                    Data = buffer
+                });
+                DebugConsole.WriteLine($"Serial Received:\n\tPitch: {status.Pitch}\n\tRoll: {status.Roll}\n\tYaw: {status.Yaw}");
+                */
+
+                var recv = serial.ReadExisting().ToList();
+                recv.ForEach(c => ReceivingBuffer.Enqueue((byte)c));
+                
+                while(ReceivingBuffer.Count >= 20)
+                {
+                    var payload = Enumerable.Range(0, 20).Select(i => ReceivingBuffer.Dequeue()).ToArray();
+
+                    PacketReceived?.Invoke(this, payload);
+
+                    var status = Factory.SatliteStatusFactory.Create2(payload);
+
+                    DebugConsole.WriteLine($"Serial Received:\n\tPitch: {status.Pitch}\n\tRoll: {status.Roll}\n\tYaw: {status.Yaw}");
+                }
             }
             catch(Exception ex)
             {
@@ -104,10 +133,11 @@ namespace SatGS.Socket
 
         public bool IsOpen { get; set; }
 
-        public event EventHandler<PacketData> PacketReceived;
+        public event EventHandler<byte[]> PacketReceived;
 
         private SerialReceiver()
         {
+            ReceivingBuffer = new Queue<byte>();
             OpenSerialPort();
         }
 

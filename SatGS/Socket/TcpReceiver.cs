@@ -11,12 +11,6 @@ using System.Windows;
 
 namespace SatGS.Socket
 {
-    struct PacketData
-    {
-        public int Length { get; set; }
-        public byte[] Data { get; set; }
-    }
-
     struct AsyncState
     {
         public TcpClient client { get; set; }
@@ -39,7 +33,7 @@ namespace SatGS.Socket
         private TcpListener listener;
         private List<TcpClient> clients;
 
-        public event EventHandler<PacketData> PacketReceived;
+        public event EventHandler<byte[]> PacketReceived;
 
         private TcpReceiver()
         {
@@ -81,11 +75,7 @@ namespace SatGS.Socket
 
             if (received <= 0) return;
 
-            PacketReceived?.Invoke(this, new PacketData()
-            {
-                Length = received,
-                Data = state.data
-            });
+            PacketReceived?.Invoke(this, state.data);
 
             state.data = new byte[BufferSize];
 

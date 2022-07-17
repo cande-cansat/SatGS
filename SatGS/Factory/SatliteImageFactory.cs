@@ -14,7 +14,7 @@ namespace SatGS.Factory
     {
         const int ImgWidth = 640;
         const int ImgHeight = 480;
-        public static Bitmap Create(PacketData packet)
+        public static Bitmap Create(byte[] payload)
         {
             var imgData = new byte[ImgWidth * ImgHeight * 4];
 
@@ -22,7 +22,7 @@ namespace SatGS.Factory
             {
                 for (int x = 0; x < ImgWidth; ++x)
                 {
-                    var value = packet.Data[y * ImgWidth + x + 1];
+                    var value = payload[y * ImgWidth + x + 1];
                     imgData[(y * 4) * ImgWidth + (x * 4 + 0)] = value;
                     imgData[(y * 4) * ImgWidth + (x * 4 + 1)] = value;
                     imgData[(y * 4) * ImgWidth + (x * 4 + 2)] = value;
