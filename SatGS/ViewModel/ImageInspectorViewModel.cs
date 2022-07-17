@@ -35,7 +35,7 @@ namespace SatGS.ViewModel
 
         public bool Checked { get; set; }
 
-        private Receiver receiver;
+        private TcpReceiver receiver;
         private OpenCV.OpenCV openCv;
 
         public ImageInspectorViewModel()
@@ -65,7 +65,7 @@ namespace SatGS.ViewModel
                 }
             }
 
-            receiver = Receiver.Instance();
+            receiver = TcpReceiver.Instance();
             receiver.PacketReceived += PacketReceived;
 
             openCv = OpenCV.OpenCV.Instance();
@@ -105,7 +105,8 @@ namespace SatGS.ViewModel
             if (Checked) // Yolo3
             {
                 if (!yolo3Results.ContainsKey(imgPath))
-                    yolo3Results.Add(imgPath, openCv.DetectionWithYolo3(imgPath));
+                    //yolo3Results.Add(imgPath, openCv.ObjectDetectionFromImage2(imgPath));
+                    yolo3Results.Add(imgPath, openCv.ObjectDetectionFromImageWithContours(imgPath));
 
                 CurrentImage = yolo3Results[imgPath];
             }
@@ -113,7 +114,7 @@ namespace SatGS.ViewModel
             {
                 if (!openCvResults.ContainsKey(imgPath))
                     //openCvResults.Add(imgPath, openCv.DetectionWithYolo3(imgPath));
-                    openCvResults.Add(imgPath, openCv.FindCountour(imgPath));
+                    openCvResults.Add(imgPath, openCv.ContourDetectionFromImage(imgPath));
 
                 CurrentImage = openCvResults[imgPath];
             }

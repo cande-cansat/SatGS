@@ -23,14 +23,14 @@ namespace SatGS.Socket
         public byte[] data { get; set; }
     }
 
-    internal class Receiver
+    internal class TcpReceiver
     {
-        private static Receiver instance;
+        private static TcpReceiver instance;
 
-        public static Receiver Instance()
+        public static TcpReceiver Instance()
         {
             if (instance == null)
-                instance = new Receiver();
+                instance = new TcpReceiver();
             return instance;
         }
 
@@ -41,7 +41,7 @@ namespace SatGS.Socket
 
         public event EventHandler<PacketData> PacketReceived;
 
-        private Receiver()
+        private TcpReceiver()
         {
             clients = new List<TcpClient>();
             listener = new TcpListener(IPAddress.Any, 6060);
@@ -101,7 +101,7 @@ namespace SatGS.Socket
             client.Dispose();
         }
 
-        ~Receiver()
+        ~TcpReceiver()
         {
             foreach (var client in clients)
                 CleanUpClient(client);

@@ -43,7 +43,7 @@ namespace SatGS.ViewModel
             {
                 var values = value.Split(' ');
                 if (values.Length != 3) return;
-                information = $"Pitch: {values[0]}\nRoll: {values[1]}\nYaw: {values[2]}";
+                information = $"Roll: {values[0]}\nPitch: {values[1]}\nYaw: {values[2]}";
                 OnPropertyChanged();
             }
         }
@@ -59,20 +59,34 @@ namespace SatGS.ViewModel
             }
         }
 
-        Receiver receiver;
+        TcpReceiver tcpReceiver;
+        SerialReceiver serialReceiver;
 
         public SatStatusViewModel()
         {
             Information = "0 0 0";
-            receiver = Receiver.Instance();
-            receiver.PacketReceived += PacketReceived;
+            tcpReceiver = TcpReceiver.Instance();
+            tcpReceiver.PacketReceived += TcpPacketReceived;
+            serialReceiver = SerialReceiver.Instance();
+            serialReceiver.PacketReceived += SerialPacketReceived;
         }
 
-        private void PacketReceived(object sender, PacketData e)
+        private void SerialPacketReceived(object sender, PacketData e)
+        {
+            var status = Factory.SatliteStatusFactory.Create2(e);
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                Rotation = new Vec3(status.Roll, status.Pitch, status.Yaw);
+                Information = $"{status.Roll} {status.Pitch} {status.Yaw}";
+            });
+        }
+
+        private void TcpPacketReceived(object sender, PacketData e)
         {
             if (e.Data[0] != 0) return;
 
-            var status = Factory.SatliteStatusFactory.Create(e);
+            var status = Factory.SatliteStatusFactory.Create1(e);
             //var quat = ToQuaternion(status.Rotation);
 
             // 실제 회전
