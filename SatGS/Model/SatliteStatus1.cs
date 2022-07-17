@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SatGS.Model
 {
-    internal class SatliteStatus
+    internal class SatliteStatus1
     {
         #region member variables
         private Vec3 position;

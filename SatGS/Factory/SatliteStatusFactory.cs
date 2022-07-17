@@ -9,7 +9,7 @@ namespace SatGS.Factory
 {
     internal static class SatliteStatusFactory
     {
-        public static Model.SatliteStatus Create(PacketData packet)
+        public static Model.SatliteStatus1 Create1(PacketData packet)
         {
             int offset = 1;
             const int step = 4;
@@ -44,7 +44,7 @@ namespace SatGS.Factory
             temperature = BitConverter.ToSingle(packet.Data, offset); offset += step;
             humidity = BitConverter.ToSingle(packet.Data, offset); offset += step;
 
-            return new Model.SatliteStatus
+            return new Model.SatliteStatus1
             {
                 Position = position,
                 Heading = heading,
@@ -53,6 +53,32 @@ namespace SatGS.Factory
                 Temperature = temperature,
                 Humidity = humidity
             };
+        }
+
+        public static Model.SatliteStatus2 Create2(PacketData packet)
+        {
+            int offset = 0;
+
+            var status = new Model.SatliteStatus2();
+
+            status.Latitude = BitConverter.ToSingle(packet.Data, offset);
+            offset += sizeof(float);
+            status.Longitude = BitConverter.ToSingle(packet.Data, offset);
+            offset += sizeof(float);
+            status.Altitude = BitConverter.ToInt16(packet.Data, offset);
+            offset += sizeof(short);
+            status.Roll = BitConverter.ToInt16(packet.Data, offset) / 100.0f;
+            offset += sizeof(short);
+            status.Pitch = BitConverter.ToInt16(packet.Data, offset) / 100.0f;
+            offset += sizeof(short);
+            status.Yaw = BitConverter.ToInt16(packet.Data, offset) / 100.0f;
+            offset += sizeof(short);
+            status.Temperature = BitConverter.ToInt16(packet.Data, offset);
+            offset += sizeof(short);
+            status.Humidity = BitConverter.ToInt16(packet.Data, offset);
+            offset += sizeof(short);
+
+            return status;
         }
     }
 }
