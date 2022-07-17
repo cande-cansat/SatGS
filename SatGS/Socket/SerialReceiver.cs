@@ -46,11 +46,20 @@ namespace SatGS.Socket
             var serialInfos = GetSerialPortInfos();
 
             string port = string.Empty;
+            string[] portFilter = new string[]
+            {
+                "Arduino",
+                "아두이노",
+                "USB",
+                "usb"
+            };
+
             foreach(var info in serialInfos)
             {
-                if (info.Value.Contains("Arduino") || info.Value.Contains("아두이노"))
+                foreach(var filter in portFilter)
                 {
-                    port = info.Key;
+                    if(info.Value.Contains(filter))
+                        port = info.Key;
                 }
             }
 
