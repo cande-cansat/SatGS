@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
 using System.Management;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -11,6 +13,7 @@ namespace SatGS.Socket
 {
     internal class SerialReceiver
     {
+        #region Singleton
         private static SerialReceiver instance;
 
         public static SerialReceiver Instance()
@@ -19,9 +22,13 @@ namespace SatGS.Socket
                 instance = new SerialReceiver();
             return instance;
         }
+        #endregion
 
+        public bool IsOpen { get; set; }
         SerialPort serial;
-        const int BufferSize = 20;
+        Thread packetMaker;
+        ConcurrentQueue<byte> ReceivingBuffer;
+        public event EventHandler<byte[]> PacketReceived;
 
         Dictionary<string, string> GetSerialPortInfos()
         {
@@ -74,55 +81,28 @@ namespace SatGS.Socket
                 serial = new SerialPort(port);
                 serial.BaudRate = 115200;
                 serial.Open();
+
                 IsOpen = true;
+
+                ReceivingBuffer = new ConcurrentQueue<byte>();
+                packetMaker = new Thread(MakePacket);
+                packetMaker.Start();
+
                 serial.DataReceived += DataReceived;
             }
             catch(Exception e)
             {
                 MessageBox.Show(e.Message);
             }
-
-            
         }
-
-        Queue<byte> ReceivingBuffer;
 
         private void DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             var serial = (SerialPort)sender;
-            //var buffer = new byte[BufferSize];
-            
             try
             {
-                /*
-                var recvLen = serial.Read(buffer, 0, BufferSize);
-                if (recvLen <= 0) return;
-                PacketReceived?.Invoke(this, new PacketData()
-                {
-                    Length = recvLen,
-                    Data = buffer
-                });
-                var status = Factory.SatliteStatusFactory.Create2(new PacketData()
-                {
-                    Length = recvLen,
-                    Data = buffer
-                });
-                DebugConsole.WriteLine($"Serial Received:\n\tPitch: {status.Pitch}\n\tRoll: {status.Roll}\n\tYaw: {status.Yaw}");
-                */
-
                 var recv = serial.ReadExisting().ToList();
                 recv.ForEach(c => ReceivingBuffer.Enqueue(Convert.ToByte(c)));
-                
-                while(ReceivingBuffer.Count >= 20)
-                {
-                    var payload = Enumerable.Range(0, 20).Select(i => ReceivingBuffer.Dequeue()).ToArray();
-
-                    PacketReceived?.Invoke(this, payload);
-
-                    var status = Factory.SatliteStatusFactory.Create2(payload);
-
-                    DebugConsole.WriteLine($"Serial Received:\n\tRoll: {status.Roll}\n\tPitch: {status.Pitch}\n\tYaw: {status.Yaw}");
-                }
             }
             catch(Exception ex)
             {
@@ -131,18 +111,37 @@ namespace SatGS.Socket
             }
         }
 
-        public bool IsOpen { get; set; }
+        void MakePacket()
+        {
+            while (IsOpen)
+            {
+                while (ReceivingBuffer.Count >= 20)
+                {
+                    var payload = Enumerable.Range(0, 20).Select(i =>
+                    {
+                        byte b;
+                        while (!ReceivingBuffer.TryDequeue(out b)) ;
+                        return b;
+                    }).ToArray();
 
-        public event EventHandler<byte[]> PacketReceived;
+                    PacketReceived?.Invoke(this, payload);
+
+                    var status = Factory.SatliteStatusFactory.Create2(payload);
+
+                    DebugConsole.WriteLine($"Serial Received:\n\tRoll: {status.Roll}\n\tPitch: {status.Pitch}\n\tYaw: {status.Yaw}");
+                }
+            }
+        }
 
         private SerialReceiver()
         {
-            ReceivingBuffer = new Queue<byte>();
             OpenSerialPort();
         }
 
         ~SerialReceiver()
         {
+            IsOpen = false;
+            packetMaker.Join();
             if (serial.IsOpen) serial.Close();
         }
     }
