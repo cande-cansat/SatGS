@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Management;
@@ -30,6 +31,8 @@ namespace SatGS.Socket
         private SerialPort serial;
         private Thread packetProcessThread;
         private ConcurrentQueue<byte> receivingBuffer;
+
+        private StreamWriter logFileStream;
         
 
         private Dictionary<string, string> GetSerialPortInfos()
@@ -75,6 +78,7 @@ namespace SatGS.Socket
             }
 
             var serialPort = filtered.First();
+            //var serialPort = "COM12";
 
             try
             {
@@ -83,6 +87,8 @@ namespace SatGS.Socket
                 serial.Open();
 
                 IsOpen = true;
+
+                logFileStream = new StreamWriter("Serial.log", true);
 
                 receivingBuffer = new ConcurrentQueue<byte>();
                 packetProcessThread = new Thread(ProcessPacket);
@@ -101,9 +107,11 @@ namespace SatGS.Socket
             var serial = (SerialPort)sender;
             try
             {
-                Encoding.Default.GetBytes(serial.ReadExisting())
-                    .ToList()
-                    .ForEach(b => receivingBuffer.Enqueue(b));
+                var size = serial.BytesToRead;
+                var buffer = new byte[size];
+
+                serial.Read(buffer, 0, size);
+                buffer.ToList().ForEach(receivingBuffer.Enqueue);
             }
             catch(Exception ex)
             {
@@ -130,9 +138,14 @@ namespace SatGS.Socket
 
                 var status = Factory.SatliteStatusFactory.Create2(payload);
 
-                DebugConsole.Write($"Serial Received: ");
-                payload.ToList().ForEach(b => DebugConsole.Write($"{Convert.ToString(b)} "));
-                DebugConsole.WriteLine($"\n\tRoll: {status.Roll}\n\tPitch: {status.Pitch}\n\tYaw: {status.Yaw}"); 
+                var hexData = payload.Aggregate("", (str, b) =>
+                {
+                    return str + Convert.ToString(b, 16) + ' ';
+                });
+
+                logFileStream.WriteLine(hexData);
+
+                DebugConsole.WriteLine($"Serial Received: {hexData}\n\tRoll: {status.Roll}\n\tPitch: {status.Pitch}\n\tYaw: {status.Yaw}");
             }
         }
 
@@ -142,13 +155,17 @@ namespace SatGS.Socket
             OpenSerial();
         }
 
-        private void CleanUpSerial()
+        public void CleanUpSerial()
         {
             if (!IsOpen) return;
 
             IsOpen = false;
+
+            logFileStream.Flush();
+            logFileStream.Close();
+
             if (packetProcessThread != null && packetProcessThread.IsAlive)
-                packetProcessThread.Join();
+                packetProcessThread.Abort();
             if (serial.IsOpen)
                 serial.Close();
         }
