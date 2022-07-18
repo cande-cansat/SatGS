@@ -5,12 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SatGS.View"
         xmlns:ViewModel="clr-namespace:SatGS.ViewModel"
-        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock" xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.DataContext>
         <ViewModel:MainWindowViewModel/>
     </Window.DataContext>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closed">
+            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnClosed"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
         <xcad:DockingManager AllowMixedOrientation="True">
             <xcad:DockingManager.DocumentHeaderTemplate>

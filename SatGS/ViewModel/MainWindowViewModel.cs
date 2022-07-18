@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SatGS.Socket;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -12,9 +13,15 @@ namespace SatGS.ViewModel
 {
     internal class MainWindowViewModel
     {
+
         public MainWindowViewModel()
         {
-            
+        }
+
+        public void OnClosed(object sender, EventArgs e)
+        {
+            TcpReceiver.Instance().CleanUpSocket();
+            SerialReceiver.Instance().CleanUpSerial();
         }
     }
 }
