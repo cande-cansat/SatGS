@@ -91,12 +91,17 @@ namespace SatGS.Socket
             client.Dispose();
         }
 
-        ~TcpReceiver()
+        public void CleanUpSocket()
         {
             foreach (var client in clients)
                 CleanUpClient(client);
             clients.Clear();
             listener.Stop();
+        }
+
+        ~TcpReceiver()
+        {
+            CleanUpSocket();
         }
     }
 }
