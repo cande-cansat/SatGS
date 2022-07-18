@@ -13,9 +13,9 @@ namespace SatGS
 
         static void Initialize()
         {
-            initialized = true;
+            //initialized = true;
 
-            AllocConsole();
+            //AllocConsole();
         }
 
         public static void Write(string text)
