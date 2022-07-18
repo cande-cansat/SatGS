@@ -25,12 +25,14 @@ namespace SatGS.Socket
         #endregion
 
         public bool IsOpen { get; set; }
-        SerialPort serial;
-        Thread packetMaker;
-        ConcurrentQueue<byte> ReceivingBuffer;
         public event EventHandler<byte[]> PacketReceived;
 
-        Dictionary<string, string> GetSerialPortInfos()
+        private SerialPort serial;
+        private Thread packetProcessThread;
+        private ConcurrentQueue<byte> receivingBuffer;
+        
+
+        private Dictionary<string, string> GetSerialPortInfos()
         {
             using (var searcher = new ManagementObjectSearcher("SELECT * FROM WIN32_SerialPort"))
             {
@@ -47,46 +49,44 @@ namespace SatGS.Socket
             }
         }
 
-        void OpenSerialPort()
+        private readonly List<string> serialFilters = new List<string>
         {
-            IsOpen = false;
+            "Arduino",
+            "아두이노",
+            "USB",
+            "usb"
+        };
+
+        private void OpenSerial()
+        {
+            if (IsOpen) return;
+
             var serialInfos = GetSerialPortInfos();
 
-            string port = string.Empty;
-            string[] portFilter = new string[]
-            {
-                "Arduino",
-                "아두이노",
-                "USB",
-                "usb"
-            };
+            var filtered = from info in serialInfos
+                           from filter in serialFilters
+                           where info.Value.Contains(filter)
+                           select info.Key;
 
-            foreach(var info in serialInfos)
-            {
-                foreach(var filter in portFilter)
-                {
-                    if(info.Value.Contains(filter))
-                        port = info.Key;
-                }
-            }
-
-            if (string.IsNullOrEmpty(port))
+            if(filtered.Count() <= 0)
             {
                 MessageBox.Show("연결된 아두이노를 찾을 수 없습니다.");
                 return;
             }
 
+            var serialPort = filtered.First();
+
             try
             {
-                serial = new SerialPort(port);
+                serial = new SerialPort(serialPort);
                 serial.BaudRate = 115200;
                 serial.Open();
 
                 IsOpen = true;
 
-                ReceivingBuffer = new ConcurrentQueue<byte>();
-                packetMaker = new Thread(MakePacket);
-                packetMaker.Start();
+                receivingBuffer = new ConcurrentQueue<byte>();
+                packetProcessThread = new Thread(ProcessPacket);
+                packetProcessThread.Start();
 
                 serial.DataReceived += DataReceived;
             }
@@ -101,48 +101,61 @@ namespace SatGS.Socket
             var serial = (SerialPort)sender;
             try
             {
-                var recv = serial.ReadExisting().ToList();
-                recv.ForEach(c => ReceivingBuffer.Enqueue(Convert.ToByte(c)));
+                Encoding.Default.GetBytes(serial.ReadExisting())
+                    .ToList()
+                    .ForEach(b => receivingBuffer.Enqueue(b));
+
+                
             }
             catch(Exception ex)
             {
                 MessageBox.Show(ex.Message);
-                IsOpen = false;
+                CleanUpSerial();
+                OpenSerial();
             }
         }
 
-        void MakePacket()
+        private void ProcessPacket()
         {
             while (IsOpen)
             {
-                while (ReceivingBuffer.Count >= 20)
+                while (receivingBuffer.Count < 20) continue;
+
+                var payload = Enumerable.Range(0, 20).Select(i =>
                 {
-                    var payload = Enumerable.Range(0, 20).Select(i =>
-                    {
-                        byte b;
-                        while (!ReceivingBuffer.TryDequeue(out b)) ;
-                        return b;
-                    }).ToArray();
+                    byte b;
+                    while (!receivingBuffer.TryDequeue(out b)) ;
+                    return b;
+                }).ToArray();
 
-                    PacketReceived?.Invoke(this, payload);
+                PacketReceived?.Invoke(this, payload);
 
-                    var status = Factory.SatliteStatusFactory.Create2(payload);
+                var status = Factory.SatliteStatusFactory.Create2(payload);
 
-                    DebugConsole.WriteLine($"Serial Received:\n\tRoll: {status.Roll}\n\tPitch: {status.Pitch}\n\tYaw: {status.Yaw}");
-                }
+                DebugConsole.WriteLine($"Serial Received:\n\tRoll: {status.Roll}\n\tPitch: {status.Pitch}\n\tYaw: {status.Yaw}");
             }
         }
 
         private SerialReceiver()
         {
-            OpenSerialPort();
+            IsOpen = false;
+            OpenSerial();
+        }
+
+        private void CleanUpSerial()
+        {
+            if (!IsOpen) return;
+
+            IsOpen = false;
+            if (packetProcessThread != null && packetProcessThread.IsAlive)
+                packetProcessThread.Join();
+            if (serial.IsOpen)
+                serial.Close();
         }
 
         ~SerialReceiver()
         {
-            IsOpen = false;
-            packetMaker.Join();
-            if (serial.IsOpen) serial.Close();
+            CleanUpSerial();
         }
     }
 }
