@@ -79,5 +79,10 @@ namespace SatGS.ViewModel
                 Information = $"{status.Rotation.X} {status.Rotation.Y} {status.Rotation.Z}";
             });
         }
+
+        ~SatStatusViewModel()
+        {
+            //serialReceiver.CleanUpSerial();
+        }
     }
 }
