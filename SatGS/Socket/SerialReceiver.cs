@@ -104,8 +104,6 @@ namespace SatGS.Socket
                 Encoding.Default.GetBytes(serial.ReadExisting())
                     .ToList()
                     .ForEach(b => receivingBuffer.Enqueue(b));
-
-                
             }
             catch(Exception ex)
             {
