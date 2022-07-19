@@ -138,14 +138,27 @@ namespace SatGS.Socket
         {
             while (IsOpen)
             {
-                while (receivingBuffer.Count < 20) continue;
+                if (receivingBuffer.Count < 22) continue;
 
-                var payload = Enumerable.Range(0, 20).Select(i =>
+                var acc = new Queue<byte>();
+                
+                while(true)
                 {
-                    byte b;
-                    while (!receivingBuffer.TryDequeue(out b)) ;
-                    return b;
-                }).ToArray();
+                    if (acc.Count >= 2 &&
+                        acc.ElementAt(acc.Count - 2) == 0x68 &&
+                        acc.ElementAt(acc.Count - 1) == 0x69)
+                        break;
+
+                    receivingBuffer.TryDequeue(out var b);
+                    acc.Enqueue(b);
+                }
+
+                if (acc.Count < 22) continue;
+
+                while (acc.Count > 22)
+                    acc.Dequeue();
+
+                var payload = acc.ToArray();
 
                 PacketReceived?.Invoke(this, payload);
 
