@@ -136,17 +136,15 @@ namespace SatGS.Socket
 
                 PacketReceived?.Invoke(this, payload);
 
-                var status = Factory.SatliteStatusFactory.Create2(payload);
                 logFileStream.Write(payload, 0, payload.Length);
 
+                /* For Debugging
+                var status = Factory.SatliteStatusFactory.Create2(payload);
                 var hexData = payload.Aggregate("", (str, b) =>
                 {
-                    return str + Convert.ToString(b, 16) + ' ';
+                    return str + Convert.ToString(b, 16).PadLeft(2, '0') + ' ';
                 });
-
-                logFileStream.WriteLine(hexData);
-
-                DebugConsole.WriteLine($"Serial Received: {hexData}\n\tRoll: {status.Roll}\n\tPitch: {status.Pitch}\n\tYaw: {status.Yaw}");
+                */
             }
         }
 
