@@ -106,8 +106,8 @@ namespace SatGS.ViewModel
             if (Checked) // Yolo3
             {
                 if (!yolo3Results.ContainsKey(imgPath))
-                    //yolo3Results.Add(imgPath, openCv.ObjectDetectionFromImage2(imgPath));
-                    yolo3Results.Add(imgPath, openCv.ObjectDetectionFromImageWithContours(imgPath));
+                    yolo3Results.Add(imgPath, openCv.ObjectDetectionFromImage2(imgPath));
+                    //yolo3Results.Add(imgPath, openCv.ObjectDetectionFromImageWithContours(imgPath));
 
                 CurrentImage = yolo3Results[imgPath];
             }

@@ -152,7 +152,7 @@ namespace SatGS.OpenCV
                     var confidence = prob.At<float>(p, 4);
 
                     // 여기가 어떤물체인지 확률, 현재 90% 초과하는 물체에 대해서만 rect를 그린다.
-                    if (confidence <= 0.4) continue;
+                    if (confidence <= 0.2) continue;
 
                     Cv2.MinMaxLoc(prob.Row(p).ColRange(5, prob.Cols), out _, out _, out _, out var classNumber);
 
@@ -164,7 +164,7 @@ namespace SatGS.OpenCV
                     var width = prob.At<float>(p, 2) * image.Width;
                     var height = prob.At<float>(p, 3) * image.Height;
 
-                    if (probability > 0.9)
+                    if (probability >= 0.7)
                     {
                         labels.Add(classNames[classes]);
                         scores.Add(probability);
@@ -236,8 +236,8 @@ namespace SatGS.OpenCV
                 var cropped = image.SubMat(rect);
                 var inputBlob = CvDnn.BlobFromImage(cropped, 1 / 255f, new OpenCvSharp.Size(416, 416), crop: false);
 
-                Cv2.ImShow("a", cropped);
-                MessageBox.Show("a", "a");
+                //Cv2.ImShow("a", cropped);
+                //MessageBox.Show("a", "a");
 
                 darknet.SetInput(inputBlob);
 
