@@ -32,7 +32,7 @@ namespace SatGS.Socket
         private Thread packetProcessThread;
         private ConcurrentQueue<byte> receivingBuffer;
 
-        private StreamWriter logFileStream;
+        private BinaryWriter logFileStream;
         
 
         private Dictionary<string, string> GetSerialPortInfos()
@@ -88,7 +88,7 @@ namespace SatGS.Socket
 
                 IsOpen = true;
 
-                logFileStream = new StreamWriter("Serial.log", true);
+                logFileStream = new BinaryWriter(new FileStream("Serial.log", FileMode.OpenOrCreate), Encoding.UTF8);
 
                 receivingBuffer = new ConcurrentQueue<byte>();
                 packetProcessThread = new Thread(ProcessPacket);
@@ -137,6 +137,7 @@ namespace SatGS.Socket
                 PacketReceived?.Invoke(this, payload);
 
                 var status = Factory.SatliteStatusFactory.Create2(payload);
+                logFileStream.Write(payload, 0, payload.Length);
 
                 var hexData = payload.Aggregate("", (str, b) =>
                 {
