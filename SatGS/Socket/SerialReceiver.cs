@@ -60,10 +60,8 @@ namespace SatGS.Socket
             "usb"
         };
 
-        private void OpenSerial()
+        private bool FindArduino(out string port)
         {
-            if (IsOpen) return;
-
             var serialInfos = GetSerialPortInfos();
 
             var filtered = from info in serialInfos
@@ -73,11 +71,26 @@ namespace SatGS.Socket
 
             if(filtered.Count() <= 0)
             {
+                port = null;
+                return false;
+            }
+
+            port = filtered.First();
+            return true;
+        }
+
+        private void OpenSerial()
+        {
+            if (IsOpen) return;
+
+            
+            if(!FindArduino(out var serialPort))
+            {
                 MessageBox.Show("연결된 아두이노를 찾을 수 없습니다.");
                 return;
             }
-
-            var serialPort = filtered.First();
+            
+            // For Debugging
             //var serialPort = "COM12";
 
             try
