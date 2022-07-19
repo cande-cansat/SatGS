@@ -23,8 +23,8 @@ namespace SatGS.ViewModel
             set
             {
                 var values = value.Split(' ');
-                if (values.Length != 3) return;
-                information = $"Roll: {values[0]}\nPitch: {values[1]}\nYaw: {values[2]}";
+                if (values.Length != 4) return;
+                information = $"Altitude: {values[0]}\nRoll: {values[1]}\nPitch: {values[2]}\nYaw: {values[3]}";
                 OnPropertyChanged();
             }
         }
@@ -59,7 +59,7 @@ namespace SatGS.ViewModel
             Application.Current.Dispatcher.Invoke(() =>
             {
                 Rotation = new Vec3(status.Roll, status.Pitch, status.Yaw);
-                Information = $"{status.Roll} {status.Pitch} {status.Yaw}";
+                Information = $"{status.Altitude} {status.Roll} {status.Pitch} {status.Yaw}";
             });
         }
 
