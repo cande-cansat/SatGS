@@ -56,6 +56,7 @@ namespace SatGS.ViewModel
 
                 foreach(var dirPath in directories)
                 {
+                    if (!Directory.Exists(dirPath)) continue;
                     var directory = new DirectoryInfo(dirPath);
                     var masks = new[] { "*.png", "*.jpg", "jpeg" };
                     var files = masks.SelectMany(directory.EnumerateFiles);
