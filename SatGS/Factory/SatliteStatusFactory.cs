@@ -73,9 +73,9 @@ namespace SatGS.Factory
             offset += sizeof(short);
             status.Yaw = BitConverter.ToInt16(payload, offset) / 100.0f;
             offset += sizeof(short);
-            status.Temperature = BitConverter.ToInt16(payload, offset);
-            offset += sizeof(short);
             status.Humidity = BitConverter.ToInt16(payload, offset);
+            offset += sizeof(short);
+            status.Temperature = BitConverter.ToInt16(payload, offset);
             offset += sizeof(short);
 
             return status;
