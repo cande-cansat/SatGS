@@ -138,9 +138,12 @@
     <Compile Include="Model\ImagePath.cs" />
     <Compile Include="Model\NotifyPropertyChanged.cs" />
     <Compile Include="Model\SatliteStatus2.cs" />
+    <Compile Include="ObjectDetection\Coordinate.cs" />
     <Compile Include="ObjectDetection\OpenCV.cs" />
+    <Compile Include="ObjectDetection\PathCalculator.cs" />
     <Compile Include="Socket\SerialReceiver.cs" />
     <Compile Include="Socket\TcpReceiver.cs" />
+    <Compile Include="Socket\TcpSender.cs" />
     <Compile Include="ViewModel\ImageInspectorViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\MapViewModel.cs" />
