@@ -41,23 +41,26 @@ namespace SatGS.Socket
             listener = new TcpListener(IPAddress.Any, 6060);
             listener.Start();
 
-            listener.BeginAcceptTcpClient(new AsyncCallback(AcceptCallback), listener);
+            listener.BeginAcceptTcpClient(AcceptCallback, listener);
         }
 
         private void AcceptCallback(IAsyncResult ar)
         {
             var listener = ar.AsyncState as TcpListener;
 
-            AsyncState state = new AsyncState();
-            state.client = listener.EndAcceptTcpClient(ar);
-            if(state.client != null)
+            AsyncState state = new AsyncState
+            {
+                client = listener.EndAcceptTcpClient(ar)
+            };
+
+            if (state.client != null)
             {
                 state.data = new byte[BufferSize];
                 clients.Add(state.client);
-                state.client.Client.BeginReceive(state.data, 0, BufferSize, SocketFlags.None, new AsyncCallback(ReceiveCallback), state);
+                state.client.Client.BeginReceive(state.data, 0, BufferSize, SocketFlags.None, ReceiveCallback, state);
             }
 
-            listener.BeginAcceptSocket(new AsyncCallback(AcceptCallback), listener);
+            listener.BeginAcceptSocket(AcceptCallback, listener);
         }
 
         private void ReceiveCallback(IAsyncResult ar)
@@ -79,7 +82,7 @@ namespace SatGS.Socket
 
             state.data = new byte[BufferSize];
 
-            client.Client.BeginReceive(state.data, 0, BufferSize, SocketFlags.None, new AsyncCallback(ReceiveCallback), state);
+            client.Client.BeginReceive(state.data, 0, BufferSize, SocketFlags.None, ReceiveCallback, state);
         }
 
         private void CleanUpClient(TcpClient client)
