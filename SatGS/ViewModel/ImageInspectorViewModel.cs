@@ -36,6 +36,8 @@ namespace SatGS.ViewModel
         private TcpReceiver receiver;
         private OpenCV openCv;
 
+        private event EventHandler<List<Coordinate>> PathCalculated;
+
         public ImageInspectorViewModel()
         {
             Images = new ObservableCollection<ImagePath>();
@@ -69,6 +71,8 @@ namespace SatGS.ViewModel
 
             openCv = OpenCV.Instance();
             openCvResults = new Dictionary<string, BitmapSource>();
+
+            PathCalculated += TcpSender.Instance().PathCalculated;
         }
 
         void PacketReceived(object sender, byte[] e)
@@ -85,6 +89,12 @@ namespace SatGS.ViewModel
             {
                 Images.Add(new ImagePath(path));
             });
+
+            PathCalculator calculator = new PathCalculator();
+
+            // 여기서 이미지 내의 물체의 path를 구한다.
+
+            PathCalculated?.Invoke(this, calculator.calcPath());
         }
 
 
@@ -94,15 +104,14 @@ namespace SatGS.ViewModel
         }
 
         private Dictionary<string, BitmapSource> openCvResults;
-        private Dictionary<string, BitmapSource> yolo3Results;
 
         public void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var imgPath = ((ImagePath)e.AddedItems[0]).FullPath;
 
             if (!openCvResults.ContainsKey(imgPath))
-                //openCvResults.Add(imgPath, openCv.DetectionWithYolo3(imgPath));
-                openCvResults.Add(imgPath, openCv.ContourDetectionFromImage(imgPath));
+                openCvResults.Add(imgPath, openCv.DetectContourOfRedObjects(imgPath));
+                //openCvResults.Add(imgPath, openCv.ContourDetectionFromImage(imgPath));
 
             CurrentImage = openCvResults[imgPath];
         }
