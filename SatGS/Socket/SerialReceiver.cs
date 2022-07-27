@@ -26,7 +26,7 @@ namespace SatGS.Socket
         #endregion
 
         public bool IsOpen { get; set; }
-        public event EventHandler<byte[]> PacketReceived;
+        public event EventHandler<Model.SatliteStatus2> PacketReceived;
 
         private SerialPort serial;
         private Thread packetProcessThread;
@@ -84,11 +84,13 @@ namespace SatGS.Socket
             if (IsOpen) return;
 
             
+            
             if(!FindArduino(out var serialPort))
             {
                 MessageBox.Show("연결된 아두이노를 찾을 수 없습니다.");
                 return;
             }
+            
             
             // For Debugging
             //var serialPort = "COM12";
@@ -159,8 +161,8 @@ namespace SatGS.Socket
                     acc.Dequeue();
 
                 var payload = acc.ToArray();
-
-                PacketReceived?.Invoke(this, payload);
+                var status = Factory.SatliteStatusFactory.Create2(payload);
+                PacketReceived?.Invoke(this, status);
 
                 logFileStream.Write(payload, 0, payload.Length);
 
