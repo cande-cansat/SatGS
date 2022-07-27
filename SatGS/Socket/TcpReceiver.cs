@@ -28,7 +28,7 @@ namespace SatGS.Socket
             return instance;
         }
 
-        const int BufferSize = 640*480 + 1;
+        const int BufferSize = 1024;
 
         private TcpListener listener;
         private List<TcpClient> clients;
@@ -37,6 +37,8 @@ namespace SatGS.Socket
 
         private TcpReceiver()
         {
+            ReceivingBuffer = new List<byte>();
+
             clients = new List<TcpClient>();
             listener = new TcpListener(IPAddress.Any, 6060);
             listener.Start();
@@ -63,22 +65,43 @@ namespace SatGS.Socket
             listener.BeginAcceptSocket(AcceptCallback, listener);
         }
 
+        private int BytesHasRead { get; set; }
+        private int BytesToRead { get; set; }
+        private List<byte> ReceivingBuffer { get; set; }
+
         private void ReceiveCallback(IAsyncResult ar)
         {
             var state = (AsyncState)ar.AsyncState;
             var client = state.client;
             var received = client.Client.EndReceive(ar, out var error);
 
-            if(error != SocketError.Success)
+            if (error != SocketError.Success)
             {
                 clients.Remove(client);
                 CleanUpClient(client);
                 return;
             }
 
-            if (received <= 0) return;
+            // int형의 파일 크기를 받을 경우
+            if (received == 4)
+            {
+                BytesHasRead = 0;
+                BytesToRead = BitConverter.ToInt32(state.data, 0);
+            }
+            else
+            {
+                BytesHasRead += received;
+                state.data.ToList().ForEach(ReceivingBuffer.Add);
+                
+                if(BytesHasRead == BytesToRead)
+                {
+                    PacketReceived?.Invoke(this, ReceivingBuffer.ToArray());
 
-            PacketReceived?.Invoke(this, state.data);
+                    ReceivingBuffer.Clear();
+                    BytesToRead = 0;
+                }
+            }
+            
 
             state.data = new byte[BufferSize];
 
