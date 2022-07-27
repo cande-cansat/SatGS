@@ -27,7 +27,7 @@
             </xcad:DockingManager.DocumentHeaderTemplate>
             <xcad:LayoutRoot>
                 <xcad:LayoutPanel Orientation="Horizontal" DockHeight="*" DockWidth="*">
-                    <xcad:LayoutDocumentPaneGroup>
+                    <xcad:LayoutDocumentPaneGroup Orientation="Vertical">
                         <xcad:LayoutDocumentPane>
                             <xcad:LayoutDocument Title="위성 상태" 
                                                  CanMove="False"
@@ -35,7 +35,13 @@
                                 <local:SatStatusView/>
                             </xcad:LayoutDocument>
                         </xcad:LayoutDocumentPane>
-                        
+                        <xcad:LayoutDocumentPane>
+                            <xcad:LayoutDocument Title="지도" >
+                                <local:MapView/>
+                            </xcad:LayoutDocument>
+                        </xcad:LayoutDocumentPane>
+                    </xcad:LayoutDocumentPaneGroup>
+                    <xcad:LayoutDocumentPaneGroup>
                         <xcad:LayoutDocumentPane DockHeight="*" DockWidth="*">
                             <xcad:LayoutDocument Title="수신 이미지"
                                                  CanMove="True"
