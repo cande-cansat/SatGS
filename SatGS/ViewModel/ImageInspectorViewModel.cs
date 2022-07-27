@@ -14,8 +14,8 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using SatGS.Model;
-using SatGS.OpenCV;
 using SatGS.Socket;
+using SatGS.ObjectDetection;
 
 namespace SatGS.ViewModel
 {
@@ -34,7 +34,7 @@ namespace SatGS.ViewModel
         public ObservableCollection<ImagePath> Images { get; }
 
         private TcpReceiver receiver;
-        private OpenCV.OpenCV openCv;
+        private OpenCV openCv;
 
         public ImageInspectorViewModel()
         {
@@ -67,9 +67,8 @@ namespace SatGS.ViewModel
             receiver = TcpReceiver.Instance();
             receiver.PacketReceived += PacketReceived;
 
-            openCv = OpenCV.OpenCV.Instance();
+            openCv = OpenCV.Instance();
             openCvResults = new Dictionary<string, BitmapSource>();
-            yolo3Results = new Dictionary<string, BitmapSource>();
         }
 
         void PacketReceived(object sender, byte[] e)

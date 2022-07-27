@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
-namespace SatGS.OpenCV
+namespace SatGS.ObjectDetection
 {
     internal class OpenCV
     {
@@ -19,7 +19,7 @@ namespace SatGS.OpenCV
 
         public static OpenCV Instance()
         {
-            if(instance == null)
+            if (instance == null)
             {
                 instance = new OpenCV();
             }
@@ -28,24 +28,12 @@ namespace SatGS.OpenCV
 
         private OpenCV()
         {
-            
+
         }
 
-
-        public OpenCvSharp.Point[][] GetContourFromImage(Mat image)
+        public OpenCvSharp.Point[][] GetContourFromBinaryImage(Mat image)
         {
-            var grayImage = new Mat();
-            var binaryImage = new Mat();
-
-            // RGB Image to GrayScale Image
-            Cv2.CvtColor(image, grayImage, ColorConversionCodes.BGR2GRAY);
-
-            // GrayScale Image to Binary Image
-            Cv2.Threshold(grayImage, binaryImage, 100, 255, ThresholdTypes.Binary);
-
-            //Cv2.ImShow("a", binaryImage);
-
-            Cv2.FindContours(binaryImage, out var contours, out var hierachy, RetrievalModes.Tree, ContourApproximationModes.ApproxTC89KCOS);
+            Cv2.FindContours(image, out var contours, out var hierachy, RetrievalModes.Tree, ContourApproximationModes.ApproxTC89KCOS);
 
             var results = new List<OpenCvSharp.Point[]>();
 
@@ -60,6 +48,22 @@ namespace SatGS.OpenCV
             }
 
             return results.ToArray();
+        }
+
+        public OpenCvSharp.Point[][] GetContourFromImage(Mat image)
+        {
+            var grayImage = new Mat();
+            var binaryImage = new Mat();
+
+            // RGB Image to GrayScale Image
+            Cv2.CvtColor(image, grayImage, ColorConversionCodes.BGR2GRAY);
+
+            // GrayScale Image to Binary Image
+            Cv2.Threshold(grayImage, binaryImage, 100, 255, ThresholdTypes.Binary);
+
+            //Cv2.ImShow("a", binaryImage);
+
+            return GetContourFromBinaryImage(binaryImage);
         }
 
 
@@ -77,9 +81,9 @@ namespace SatGS.OpenCV
             Cv2.ImShow("a", gausianImage);
 
             // GrayScale Image to Binary ImBage
-            Cv2.Threshold(gausianImage, binaryImage, 100, 255, ThresholdTypes.Binary);
+            Cv2.Threshold(gausianImage, binaryImage, 128, 255, ThresholdTypes.Binary);
 
-            
+
 
             Cv2.FindContours(binaryImage, out var contours, out var hierachy, RetrievalModes.Tree, ContourApproximationModes.ApproxTC89KCOS);
 
@@ -97,7 +101,7 @@ namespace SatGS.OpenCV
 
             //Cv2.DrawContours(image, newCountours, -1, Scalar.Red, 2, LineTypes.AntiAlias, null, 1);
 
-            return WriteableBitmapConverter.ToWriteableBitmap(image);
+            return image.ToWriteableBitmap();
         }
 
         public BitmapSource ContourDetectionFromImage(string imagePath)
@@ -105,16 +109,35 @@ namespace SatGS.OpenCV
             return ContourDetectionFromImage(new Mat(imagePath));
         }
 
-        public Mat RemoveImageBackground(Mat image)
+        public BitmapSource DetectContourOfRedObjects(string imagePath)
         {
-            var img_rgb = new Mat();
-            Cv2.CvtColor(image, img_rgb, ColorConversionCodes.BGR2RGB);
-            return null;
+            return DetectContourOfRedObjects(new Mat(imagePath));
         }
 
-        public Mat RemoveImageBackground(string imagePath)
+        public BitmapSource DetectContourOfRedObjects(Mat image)
         {
-            return RemoveImageBackground(new Mat(imagePath));
+            var ranged_image = new Mat();
+            var lower = InputArray.Create(new[] { 0, 0, 128 });
+            var upper = InputArray.Create(new[] { 100, 100, 255 });
+            Cv2.InRange(image, lower, upper, ranged_image);
+
+            var contours = GetContourFromBinaryImage(ranged_image);
+
+            Cv2.ImShow("a", ranged_image);
+
+            var imageSize = image.Size();
+
+            foreach (var contour in contours)
+            {
+                var length = Cv2.ArcLength(contour, true);
+                var contourSize = Cv2.BoundingRect(contour).Size;
+                if (length > 200 && imageSize != contourSize)
+                {
+                    Cv2.Rectangle(image, Cv2.BoundingRect(contour), Scalar.Green, 2, LineTypes.AntiAlias);
+                }
+            }
+
+            return image.ToBitmapSource();
         }
     }
 }
