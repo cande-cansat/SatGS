@@ -13,20 +13,20 @@ using System.Windows.Media.Imaging;
 
 namespace SatGS.ObjectDetection
 {
-    internal class OpenCV
+    public class ObjectDetector
     {
-        private static OpenCV instance;
+        private static ObjectDetector instance;
 
-        public static OpenCV Instance()
+        public static ObjectDetector Instance()
         {
             if (instance == null)
             {
-                instance = new OpenCV();
+                instance = new ObjectDetector();
             }
             return instance;
         }
 
-        private OpenCV()
+        private ObjectDetector()
         {
 
         }

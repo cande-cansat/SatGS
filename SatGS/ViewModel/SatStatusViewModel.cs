@@ -9,12 +9,15 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using Media3D = System.Windows.Media.Media3D;
-using SatGS.Socket;
-using SatGS.Model;
+using SatGS.Communication;
+
+using Vec3 = System.Tuple<float, float, float>;
+using SatGS.SateliteData;
+using SatGS.Interface;
 
 namespace SatGS.ViewModel
 {
-    internal class SatStatusViewModel : Model.NotifyPropertyChanged
+    internal class SatStatusViewModel : NotifyPropertyChanged
     {
         private string information;
         public string Information 
@@ -40,41 +43,18 @@ namespace SatGS.ViewModel
             }
         }
 
-        TcpReceiver tcpReceiver;
-        SerialReceiver serialReceiver;
-
         public SatStatusViewModel()
         {
-            Information = "0 0 0";
-            tcpReceiver = TcpReceiver.Instance();
-            tcpReceiver.PacketReceived += TcpPacketReceived;
-            serialReceiver = SerialReceiver.Instance();
-            serialReceiver.PacketReceived += SerialPacketReceived;
+            Information = "0 0 0 0";
+            SerialReceiver.Instance().PacketReceived += SerialPacketReceived;
         }
 
-        private void SerialPacketReceived(object sender, SatliteStatus2 e)
+        private void SerialPacketReceived(object sender, SateliteStatus e)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
                 Rotation = new Vec3(e.Roll, e.Pitch, e.Yaw);
                 Information = $"{e.Altitude} {e.Roll} {e.Pitch} {e.Yaw}";
-            });
-        }
-
-        private void TcpPacketReceived(object sender, byte[] e)
-        {
-            if (e[0] != 0) return;
-
-            var status = Factory.SatliteStatusFactory.Create1(e);
-            //var quat = ToQuaternion(status.Rotation);
-
-            // 실제 회전
-            // 현재 위치에서가 아닌, identity에서의 회전을 구현해야 함
-
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                Rotation = status.Rotation;
-                Information = $"{status.Rotation.X} {status.Rotation.Y} {status.Rotation.Z}";
             });
         }
 

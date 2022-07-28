@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SatGS.View"
              xmlns:ViewModel="clr-namespace:SatGS.ViewModel"
-             xmlns:Model="clr-namespace:SatGS.Model"
              xmlns:hx="clr-namespace:HelixToolkit.Wpf;assembly=HelixToolkit.Wpf"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
@@ -20,17 +19,17 @@
                 <Transform3DGroup>
                     <RotateTransform3D>
                         <RotateTransform3D.Rotation>
-                            <AxisAngleRotation3D Axis="1 0 0" Angle="{Binding Rotation.X}"/>
+                            <AxisAngleRotation3D Axis="1 0 0" Angle="{Binding Rotation.Item1}"/>
                         </RotateTransform3D.Rotation>
                     </RotateTransform3D>
                     <RotateTransform3D>
                         <RotateTransform3D.Rotation>
-                            <AxisAngleRotation3D Axis="0 1 0" Angle="{Binding Rotation.Y}"/>
+                            <AxisAngleRotation3D Axis="0 1 0" Angle="{Binding Rotation.Item2}"/>
                         </RotateTransform3D.Rotation>
                     </RotateTransform3D>
                     <RotateTransform3D>
                         <RotateTransform3D.Rotation>
-                            <AxisAngleRotation3D Axis="0 0 1" Angle="{Binding Rotation.Z}"/>
+                            <AxisAngleRotation3D Axis="0 0 1" Angle="{Binding Rotation.Item3}"/>
                         </RotateTransform3D.Rotation>
                     </RotateTransform3D>
                 </Transform3DGroup>

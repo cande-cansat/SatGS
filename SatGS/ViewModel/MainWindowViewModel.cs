@@ -1,4 +1,4 @@
-﻿using SatGS.Socket;
+﻿using SatGS.Communication;
 using SatGS.View;
 using System;
 using System.Collections.Generic;

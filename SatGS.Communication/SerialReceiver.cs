@@ -9,10 +9,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using SatGS.SateliteData;
 
-namespace SatGS.Socket
+namespace SatGS.Communication
 {
-    internal class SerialReceiver
+    public class SerialReceiver
     {
         #region Singleton
         private static SerialReceiver instance;
@@ -26,7 +27,7 @@ namespace SatGS.Socket
         #endregion
 
         public bool IsOpen { get; set; }
-        public event EventHandler<Model.SatliteStatus2> PacketReceived;
+        public event EventHandler<SateliteStatus> PacketReceived;
 
         private SerialPort serial;
         private Thread packetProcessThread;
@@ -161,7 +162,7 @@ namespace SatGS.Socket
                     acc.Dequeue();
 
                 var payload = acc.ToArray();
-                var status = Factory.SatliteStatusFactory.Create2(payload);
+                var status = SateliteStatusFactory.Create(payload);
                 PacketReceived?.Invoke(this, status);
 
                 logFileStream.Write(payload, 0, payload.Length);

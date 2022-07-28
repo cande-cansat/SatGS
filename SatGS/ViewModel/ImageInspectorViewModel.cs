@@ -13,9 +13,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using SatGS.Model;
-using SatGS.Socket;
+using SatGS.Communication;
 using SatGS.ObjectDetection;
+using SatGS.SateliteData;
+using SatGS.Interface;
+using SatGS.PathFinder;
 
 namespace SatGS.ViewModel
 {
@@ -31,16 +33,16 @@ namespace SatGS.ViewModel
                 OnPropertyChanged();
             }
         }
-        public ObservableCollection<ImagePath> Images { get; }
+        public ObservableCollection<SateliteImage> Images { get; }
 
         private TcpReceiver receiver;
-        private OpenCV openCv;
+        private ObjectDetector objectDetector;
 
         private event EventHandler<List<Coordinate>> PathCalculated;
 
         public ImageInspectorViewModel()
         {
-            Images = new ObservableCollection<ImagePath>();
+            Images = new ObservableCollection<SateliteImage>();
 
             if (!Directory.Exists("Images"))
                 Directory.CreateDirectory("Images");
@@ -62,14 +64,14 @@ namespace SatGS.ViewModel
                     var files = masks.SelectMany(directory.EnumerateFiles);
 
                     foreach (var file in files)
-                        Images.Add(new ImagePath(file.FullName));
+                        Images.Add(new SateliteImage(file.FullName));
                 }
             }
 
             receiver = TcpReceiver.Instance();
             receiver.PacketReceived += PacketReceived;
 
-            openCv = OpenCV.Instance();
+            objectDetector = ObjectDetector.Instance();
             openCvResults = new Dictionary<string, BitmapSource>();
 
             PathCalculated += TcpSender.Instance().PathCalculated;
@@ -77,17 +79,11 @@ namespace SatGS.ViewModel
 
         void PacketReceived(object sender, byte[] e)
         {
-            if (e[0] != 1) return;
-
-            var image = Factory.SatliteImageFactory.Create(e);
-
-            var fileName = $"{DateTime.Now:MM.dd_HH.mm.ss}";
-            var path = $"{Directory.GetCurrentDirectory()}\\Images\\{fileName}.png";
-            image.Save(path, ImageFormat.Png);
+            var image = SateliteImageFactory.Create(e);
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-                Images.Add(new ImagePath(path));
+                Images.Add(image);
             });
 
             PathCalculator calculator = new PathCalculator();
@@ -107,10 +103,10 @@ namespace SatGS.ViewModel
 
         public void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var imgPath = ((ImagePath)e.AddedItems[0]).FullPath;
+            var imgPath = (e.AddedItems[0] as SateliteImage).Path;
 
             if (!openCvResults.ContainsKey(imgPath))
-                openCvResults.Add(imgPath, openCv.DetectContourOfRedObjects(imgPath));
+                openCvResults.Add(imgPath, objectDetector.DetectContourOfRedObjects(imgPath));
                 //openCvResults.Add(imgPath, openCv.ContourDetectionFromImage(imgPath));
 
             CurrentImage = openCvResults[imgPath];

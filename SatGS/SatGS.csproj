@@ -133,17 +133,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Factory\SatliteImageFactory.cs" />
-    <Compile Include="LicenseChecker.cs" />
-    <Compile Include="Model\ImagePath.cs" />
-    <Compile Include="Model\NotifyPropertyChanged.cs" />
-    <Compile Include="Model\SatliteStatus2.cs" />
-    <Compile Include="ObjectDetection\Coordinate.cs" />
-    <Compile Include="ObjectDetection\OpenCV.cs" />
-    <Compile Include="ObjectDetection\PathCalculator.cs" />
-    <Compile Include="Socket\SerialReceiver.cs" />
-    <Compile Include="Socket\TcpReceiver.cs" />
-    <Compile Include="Socket\TcpSender.cs" />
+    <Compile Include="Interface\NotifyPropertyChanged.cs" />
+    <Compile Include="License\LicenseChecker.cs" />
     <Compile Include="ViewModel\ImageInspectorViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\MapViewModel.cs" />
@@ -173,7 +164,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Factory\SatliteStatusFactory.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -192,9 +182,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\SatliteStatus1.cs" />
-    <Compile Include="Model\Vec2.cs" />
-    <Compile Include="Model\Vec3.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -212,9 +199,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="darknet\yolov3.cfg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="ImagePath.cfg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -228,12 +212,27 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="darknet\yolov3.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <Content Include="OpenCvSharpExtern.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\PathFinder\PathFinder\SatGS.PathFinder.csproj">
+      <Project>{3fd9a00e-8cd5-4a29-93b4-6a7c6a6f79c9}</Project>
+      <Name>SatGS.PathFinder</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SatGS.Communication\SatGS.Communication.csproj">
+      <Project>{db3eac05-7ee6-48a3-bed7-633a1dcbb58c}</Project>
+      <Name>SatGS.Communication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SatGS.ObjectDetection\SatGS.ObjectDetection.csproj">
+      <Project>{ed2ac599-20be-4f6f-968d-16ad6ead2340}</Project>
+      <Name>SatGS.ObjectDetection</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SatGS.SateliteData\SatGS.SateliteData.csproj">
+      <Project>{cb7910ec-421f-4745-a9fb-3f1f241155aa}</Project>
+      <Name>SatGS.SateliteData</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

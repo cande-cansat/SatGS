@@ -1,6 +1,7 @@
 ﻿using GMap.NET.MapProviders;
 using GMap.NET.WindowsPresentation;
-using SatGS.Socket;
+using SatGS.Communication;
+using SatGS.SateliteData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using SatGS.Interface;
 
 namespace SatGS.ViewModel
 {
-    internal class MapViewModel : Model.NotifyPropertyChanged
+    internal class MapViewModel : NotifyPropertyChanged
     {
         public object GMapControl { get; set; }
 
@@ -36,7 +38,7 @@ namespace SatGS.ViewModel
             SerialReceiver.Instance().PacketReceived += PacketReceived;
         }
 
-        private void PacketReceived(object sender, Model.SatliteStatus2 e)
+        private void PacketReceived(object sender, SateliteStatus e)
         {
             GMapMarker marker;
             var newPosition = new GMap.NET.PointLatLng(e.Latitude, e.Longitude);

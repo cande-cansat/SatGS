@@ -1,4 +1,4 @@
-﻿using SatGS.ObjectDetection;
+﻿using SatGS.PathFinder;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace SatGS.Socket
+namespace SatGS.Communication
 {
-    internal class TcpSender
+    public class TcpSender
     {
         struct AsyncState
         {
@@ -38,9 +38,11 @@ namespace SatGS.Socket
         private void ConnectCallback(IAsyncResult ar)
         {
             var connector = ar.AsyncState as TcpClient;
-            connector.EndConnect(ar);
-
-            if (!connector.Connected)
+            try
+            {
+                connector.EndConnect(ar);
+            }
+            catch
             {
                 connector.BeginConnect(System.Net.IPAddress.Any, 50001, ConnectCallback, connector);
             }

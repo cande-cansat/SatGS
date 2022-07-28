@@ -16,7 +16,7 @@ namespace SatGS
     {
         public App()
         {
-            LicenseChecker.CheckLicense();
+            License.LicenseChecker.CheckLicense();
         }
     }
 }

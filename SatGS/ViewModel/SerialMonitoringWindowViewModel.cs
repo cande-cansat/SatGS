@@ -1,4 +1,6 @@
-﻿using SatGS.Socket;
+﻿using SatGS.Interface;
+using SatGS.SateliteData;
+using SatGS.Communication;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,7 +12,7 @@ using System.Windows;
 
 namespace SatGS.ViewModel
 {
-    internal class SerialMonitoringWindowViewModel : Model.NotifyPropertyChanged
+    internal class SerialMonitoringWindowViewModel : NotifyPropertyChanged
     {
         public ObservableCollection<SateliteStatus> SerialDataList { get; set; }
 
@@ -31,7 +33,7 @@ namespace SatGS.ViewModel
             SerialReceiver.Instance().PacketReceived += PacketReceived;
         }
 
-        private void PacketReceived(object sender, Model.SatliteStatus2 e)
+        private void PacketReceived(object sender, SateliteStatus e)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
