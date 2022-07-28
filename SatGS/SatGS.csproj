@@ -216,6 +216,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ObjectDetection\SatGS.ObjectDetection\SatGS.ObjectDetection.csproj">
+      <Project>{ed2ac599-20be-4f6f-968d-16ad6ead2340}</Project>
+      <Name>SatGS.ObjectDetection</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\PathFinder\SatGS.PathFinder\SatGS.PathFinder.csproj">
       <Project>{3fd9a00e-8cd5-4a29-93b4-6a7c6a6f79c9}</Project>
       <Name>SatGS.PathFinder</Name>
@@ -227,10 +231,6 @@
     <ProjectReference Include="..\SatGS.Interface\SatGS.Interface.csproj">
       <Project>{0fd38a66-9944-419c-95fa-ad75832e4380}</Project>
       <Name>SatGS.Interface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SatGS.ObjectDetection\SatGS.ObjectDetection.csproj">
-      <Project>{ed2ac599-20be-4f6f-968d-16ad6ead2340}</Project>
-      <Name>SatGS.ObjectDetection</Name>
     </ProjectReference>
     <ProjectReference Include="..\SatGS.SateliteData\SatGS.SateliteData.csproj">
       <Project>{cb7910ec-421f-4745-a9fb-3f1f241155aa}</Project>
