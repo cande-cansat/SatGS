@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using SatGS.SateliteData;
 
 namespace SatGS.Communication
 {
@@ -27,7 +26,7 @@ namespace SatGS.Communication
         #endregion
 
         public bool IsOpen { get; set; }
-        public event EventHandler<SateliteStatus> PacketReceived;
+        public event EventHandler<byte[]> PacketReceived;
 
         private SerialPort serial;
         private Thread packetProcessThread;
@@ -162,18 +161,9 @@ namespace SatGS.Communication
                     acc.Dequeue();
 
                 var payload = acc.ToArray();
-                var status = SateliteStatusFactory.Create(payload);
-                PacketReceived?.Invoke(this, status);
+                PacketReceived?.Invoke(this, payload);
 
                 logFileStream.Write(payload, 0, payload.Length);
-
-                /* For Debugging
-                var status = Factory.SatliteStatusFactory.Create2(payload);
-                var hexData = payload.Aggregate("", (str, b) =>
-                {
-                    return str + Convert.ToString(b, 16).PadLeft(2, '0') + ' ';
-                });
-                */
             }
         }
 

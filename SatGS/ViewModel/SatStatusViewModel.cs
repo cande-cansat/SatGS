@@ -49,12 +49,14 @@ namespace SatGS.ViewModel
             SerialReceiver.Instance().PacketReceived += SerialPacketReceived;
         }
 
-        private void SerialPacketReceived(object sender, SateliteStatus e)
+        private void SerialPacketReceived(object sender, byte[] e)
         {
+            var status = SateliteStatusFactory.Create(e);
+
             Application.Current.Dispatcher.Invoke(() =>
             {
-                Rotation = new Vec3(e.Roll, e.Pitch, e.Yaw);
-                Information = $"{e.Altitude} {e.Roll} {e.Pitch} {e.Yaw}";
+                Rotation = new Vec3(status.Roll, status.Pitch, status.Yaw);
+                Information = $"{status.Altitude} {status.Roll} {status.Pitch} {status.Yaw}";
             });
         }
 

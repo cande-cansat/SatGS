@@ -1,5 +1,4 @@
-﻿using SatGS.PathFinder;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -48,28 +47,14 @@ namespace SatGS.Communication
             }
         }
 
-        public void PathCalculated(object sender, List<Coordinate> coordinates)
+        public void PathCalculated(object sender, byte[] data)
         {
             if (!connector.Connected) return;
 
-            var size = coordinates.Count * 3 * 4;
-            var buffer = new byte[size];
-            var offset = 0;
-            foreach(var coordinate in coordinates)
-            {
-                var bItem1 = BitConverter.GetBytes(coordinate.item1);
-                var bItem2 = BitConverter.GetBytes(coordinate.item2);
-                var bItem3 = BitConverter.GetBytes(coordinate.item3);
-
-                bItem1.CopyTo(buffer, offset); offset += 4;
-                bItem2.CopyTo(buffer, offset); offset += 4;
-                bItem3.CopyTo(buffer, offset); offset += 4;
-            }
-
-            connector.Client.BeginSend(buffer, 0, size, SocketFlags.None, SendCallback, new AsyncState
+            connector.Client.BeginSend(data, 0, data.Length, SocketFlags.None, SendCallback, new AsyncState
             {
                 connector = connector,
-                bytesToSend = size
+                bytesToSend = data.Length
             });
         }
 

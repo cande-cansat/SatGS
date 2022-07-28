@@ -33,11 +33,13 @@ namespace SatGS.ViewModel
             SerialReceiver.Instance().PacketReceived += PacketReceived;
         }
 
-        private void PacketReceived(object sender, SateliteStatus e)
+        private void PacketReceived(object sender, byte[] e)
         {
+            var status = SateliteStatusFactory.Create(e);
+
             Application.Current.Dispatcher.Invoke(() =>
             {
-                SerialDataList.Add(e);
+                SerialDataList.Add(status);
                 SelectedIndex = SerialDataList.Count - 1;
                 
             });

@@ -38,10 +38,12 @@ namespace SatGS.ViewModel
             SerialReceiver.Instance().PacketReceived += PacketReceived;
         }
 
-        private void PacketReceived(object sender, SateliteStatus e)
+        private void PacketReceived(object sender, byte[] e)
         {
+            var status = SateliteStatusFactory.Create(e);
+
             GMapMarker marker;
-            var newPosition = new GMap.NET.PointLatLng(e.Latitude, e.Longitude);
+            var newPosition = new GMap.NET.PointLatLng(status.Latitude, status.Longitude);
 
             var gMapControl = GMapControl as GMapControl;
 

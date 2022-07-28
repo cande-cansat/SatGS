@@ -38,7 +38,7 @@ namespace SatGS.ViewModel
         private TcpReceiver receiver;
         private ObjectDetector objectDetector;
 
-        private event EventHandler<List<Coordinate>> PathCalculated;
+        private event EventHandler<byte[]> PathCalculated;
 
         public ImageInspectorViewModel()
         {
@@ -90,7 +90,25 @@ namespace SatGS.ViewModel
 
             // 여기서 이미지 내의 물체의 path를 구한다.
 
-            PathCalculated?.Invoke(this, calculator.calcPath());
+            {
+                var coordinates = calculator.calcPath();
+
+                var size = coordinates.Count * 3 * 4;
+                var buffer = new byte[size];
+                var offset = 0;
+                foreach (var coordinate in coordinates)
+                {
+                    var bItem1 = BitConverter.GetBytes(coordinate.item1);
+                    var bItem2 = BitConverter.GetBytes(coordinate.item2);
+                    var bItem3 = BitConverter.GetBytes(coordinate.item3);
+
+                    bItem1.CopyTo(buffer, offset); offset += 4;
+                    bItem2.CopyTo(buffer, offset); offset += 4;
+                    bItem3.CopyTo(buffer, offset); offset += 4;
+                }
+
+                PathCalculated?.Invoke(this, buffer);
+            }
         }
 
 
