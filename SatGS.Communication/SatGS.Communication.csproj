@@ -49,8 +49,8 @@
     <Compile Include="TcpSender.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\PathFinder\PathFinder\SatGS.PathFinder.csproj">
-      <Project>{3FD9A00E-8CD5-4A29-93B4-6A7C6A6F79C9}</Project>
+    <ProjectReference Include="..\..\PathFinder\SatGS.PathFinder\SatGS.PathFinder.csproj">
+      <Project>{3fd9a00e-8cd5-4a29-93b4-6a7c6a6f79c9}</Project>
       <Name>SatGS.PathFinder</Name>
     </ProjectReference>
     <ProjectReference Include="..\SatGS.SateliteData\SatGS.SateliteData.csproj">
