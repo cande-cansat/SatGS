@@ -133,7 +133,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Interface\NotifyPropertyChanged.cs" />
     <Compile Include="License\LicenseChecker.cs" />
     <Compile Include="ViewModel\ImageInspectorViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
@@ -224,6 +223,10 @@
     <ProjectReference Include="..\SatGS.Communication\SatGS.Communication.csproj">
       <Project>{db3eac05-7ee6-48a3-bed7-633a1dcbb58c}</Project>
       <Name>SatGS.Communication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SatGS.Interface\SatGS.Interface.csproj">
+      <Project>{0fd38a66-9944-419c-95fa-ad75832e4380}</Project>
+      <Name>SatGS.Interface</Name>
     </ProjectReference>
     <ProjectReference Include="..\SatGS.ObjectDetection\SatGS.ObjectDetection.csproj">
       <Project>{ed2ac599-20be-4f6f-968d-16ad6ead2340}</Project>
