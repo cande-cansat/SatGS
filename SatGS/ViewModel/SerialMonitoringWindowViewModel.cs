@@ -12,7 +12,7 @@ namespace SatGS.ViewModel
 {
     internal class SerialMonitoringWindowViewModel : Model.NotifyPropertyChanged
     {
-        public ObservableCollection<Model.SatliteStatus2> SerialDataList { get; set; }
+        public ObservableCollection<SateliteStatus> SerialDataList { get; set; }
 
         private int selectedIndex;
         public int SelectedIndex
@@ -27,7 +27,7 @@ namespace SatGS.ViewModel
 
         public SerialMonitoringWindowViewModel()
         {
-            SerialDataList = new ObservableCollection<Model.SatliteStatus2>();
+            SerialDataList = new ObservableCollection<SateliteStatus>();
             SerialReceiver.Instance().PacketReceived += PacketReceived;
         }
 
