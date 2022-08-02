@@ -397,5 +397,5 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-# DNN Weight  files
-*.weights
+# image files
+*.png
