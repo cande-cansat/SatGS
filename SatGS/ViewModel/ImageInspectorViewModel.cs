@@ -33,6 +33,18 @@ namespace SatGS.ViewModel
                 OnPropertyChanged();
             }
         }
+
+        private int selectedIndex;
+        public int SelectedIndex
+        {
+            get => selectedIndex;
+            set
+            {
+                selectedIndex = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ObservableCollection<SateliteImage> Images { get; }
 
         private TcpReceiver receiver;
@@ -50,7 +62,7 @@ namespace SatGS.ViewModel
             {
                 string[] directories = File.ReadAllLines(
 #if DEBUG
-                    "../../ImagePath.cfg"
+                    "../../../ImagePath.cfg"
 #else
                     "ImagePath.cfg"
 #endif
@@ -77,20 +89,31 @@ namespace SatGS.ViewModel
             PathCalculated += TcpSender.Instance().PathCalculated;
         }
 
-        void PacketReceived(object sender, byte[] e)
+        void PacketReceived(object sender, SateliteImage e)
         {
-            var image = SateliteImageFactory.Create(e);
-
+            /*
             Application.Current.Dispatcher.Invoke(() =>
             {
                 Images.Add(image);
+                SelectedIndex = Images.Count - 1;
+            });
+            */
+            /*
+            Application.Current.Dispatcher.BeginInvoke((Action) (() => {
+                
+            }));
+            */
+            Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                Images.Add(e);
+                SelectedIndex = Images.Count - 1;
             });
 
             PathCalculator calculator = new PathCalculator();
 
             // 여기서 이미지 내의 물체의 path를 구한다.
 
-            {
+            /*{
                 var coordinates = calculator.calcPath();
 
                 var size = coordinates.Count * 3 * 4;
@@ -108,7 +131,7 @@ namespace SatGS.ViewModel
                 }
 
                 PathCalculated?.Invoke(this, buffer);
-            }
+            }*/
         }
 
 
@@ -121,13 +144,37 @@ namespace SatGS.ViewModel
 
         public void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var imgPath = (e.AddedItems[0] as SateliteImage).Path;
+            var listview = sender as ListView;
+            listview.ScrollIntoView(e.AddedItems[0]);
 
-            if (!openCvResults.ContainsKey(imgPath))
-                openCvResults.Add(imgPath, objectDetector.DetectContourOfRedObjects(imgPath));
-                //openCvResults.Add(imgPath, openCv.ContourDetectionFromImage(imgPath));
+            var img = e.AddedItems[0] as SateliteImage;
+            
+            if (!openCvResults.ContainsKey(img.Path))
+            {
+                var detected = objectDetector.DetectContourOfRedObjects(img.Path);
+                if (detected == null) return;
 
-            CurrentImage = openCvResults[imgPath];
+                openCvResults.Add(img.Path, detected);
+                CurrentImage = openCvResults[img.Path];
+
+
+                // 이 부분에서 OpenCV Output image를 파일로 출력해야 함
+
+                var opencvPath = "./Images/OpenCV";
+                if (!Directory.Exists(opencvPath))
+                    Directory.CreateDirectory(opencvPath);
+
+                using(var stream = new FileStream($"{opencvPath}/cv_{img.FileName}", FileMode.Create))
+                {
+                    var encoder = new JpegBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create(openCvResults[img.Path]));
+                    encoder.Save(stream);
+                }
+            }
+            else
+            {
+                CurrentImage = openCvResults[img.Path];
+            }
         }
     }
 }

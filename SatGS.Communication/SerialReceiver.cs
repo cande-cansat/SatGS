@@ -93,7 +93,7 @@ namespace SatGS.Communication
             
             
             // For Debugging
-            //var serialPort = "COM12";
+            //var serialPort = "COM2";
 
             try
             {

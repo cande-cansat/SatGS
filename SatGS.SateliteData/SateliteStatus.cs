@@ -8,6 +8,7 @@ namespace SatGS.SateliteData
 {
     public class SateliteStatus
     {
+        public string Time { get; set; }
         public float Latitude { get; set; }
         public float Longitude { get; set; }
         public float Altitude { get; set; }
@@ -26,6 +27,7 @@ namespace SatGS.SateliteData
 
             var status = new SateliteStatus();
 
+            status.Time = DateTime.Now.ToString("HH.mm.ss");
             status.Latitude = BitConverter.ToSingle(payload, offset);
             offset += sizeof(float);
             status.Longitude = BitConverter.ToSingle(payload, offset);

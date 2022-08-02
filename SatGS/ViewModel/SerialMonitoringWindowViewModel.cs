@@ -9,6 +9,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+<<<<<<< Updated upstream
+=======
+using System.Windows.Controls;
+using System.Windows.Data;
+>>>>>>> Stashed changes
 
 namespace SatGS.ViewModel
 {
@@ -16,13 +21,13 @@ namespace SatGS.ViewModel
     {
         public ObservableCollection<SateliteStatus> SerialDataList { get; set; }
 
-        private int selectedIndex;
-        public int SelectedIndex
+        private object selectedItem;
+        public object SelectedItem
         {
-            get => selectedIndex;
+            get => selectedItem;
             set
             {
-                selectedIndex = value;
+                selectedItem = value;
                 OnPropertyChanged();
             }
         }
@@ -40,8 +45,12 @@ namespace SatGS.ViewModel
             Application.Current.Dispatcher.Invoke(() =>
             {
                 SerialDataList.Add(status);
+<<<<<<< Updated upstream
                 SelectedIndex = SerialDataList.Count - 1;
                 
+=======
+                SelectedItem = status;
+>>>>>>> Stashed changes
             });
         }
 
@@ -62,6 +71,13 @@ namespace SatGS.ViewModel
             }
 
             MessageBox.Show("출력 완료");
+        }
+
+        public void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var list = sender as ListView;
+
+            list.ScrollIntoView(e.AddedItems[0]);
         }
     }
 }

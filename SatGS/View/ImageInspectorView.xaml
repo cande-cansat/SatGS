@@ -23,7 +23,8 @@
                     </xcad:LayoutDocumentPane>
                     <xcad:LayoutDocumentPane>
                         <xcad:LayoutDocument Title="이미지 목록" CanClose="False">
-                            <ListView ItemsSource="{Binding Images}">
+                            <ListView ItemsSource="{Binding Images}"
+                                      SelectedIndex="{Binding SelectedIndex}">
                                 <ListView.Resources>
                                     <Style TargetType="{x:Type GridViewColumnHeader}">
                                         <Setter Property="Visibility" Value="Collapsed"/>

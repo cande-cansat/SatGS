@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationFramework" />
@@ -47,6 +49,12 @@
     <Compile Include="SerialReceiver.cs" />
     <Compile Include="TcpReceiver.cs" />
     <Compile Include="TcpSender.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SatGS.SateliteData\SatGS.SateliteData.csproj">
+      <Project>{CB7910EC-421F-4745-A9FB-3F1F241155AA}</Project>
+      <Name>SatGS.SateliteData</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

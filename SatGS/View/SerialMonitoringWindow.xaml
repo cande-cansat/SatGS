@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SatGS.View"
-        xmlns:i="http://schemas.microsoft.com/xaml/behaviors" xmlns:viewmodel="clr-namespace:SatGS.ViewModel"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors" xmlns:viewmodel="clr-namespace:SatGS.ViewModel" xmlns:behavior="clr-namespace:SatGS.Behavior"
         mc:Ignorable="d"
         Title="SerialMonitoringWindow" Height="450" Width="800">
     <Window.DataContext>
@@ -22,12 +22,21 @@
             </i:Interaction.Triggers>
         </Button>
         <ListView ItemsSource="{Binding SerialDataList}"
-                  SelectedIndex="{Binding SelectedIndex}"
+                  SelectedItem="{Binding SelectedItem}"
+                  SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical"
                   Margin="0 20 0 0">
             <ListView.View>
                 <GridView>
+                    <GridViewColumn Header="수신 시간"
+                                    Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Time}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                     <GridViewColumn Header="위도"
-                                    Width="200">
+                                    Width="150">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Latitude}"/>
@@ -35,7 +44,7 @@
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="경도"
-                                    Width="200">
+                                    Width="150">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Longitude}"/>

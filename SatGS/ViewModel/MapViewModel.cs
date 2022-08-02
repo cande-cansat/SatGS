@@ -20,7 +20,6 @@ namespace SatGS.ViewModel
 
         public MapViewModel()
         {
-            // x86_64용, ARM 지원 안함
             InitializeGMap();
         }
 
