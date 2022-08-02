@@ -81,6 +81,8 @@ namespace SatGS.ViewModel
             openCvResults = new Dictionary<string, BitmapSource>();
 
             PathCalculated += TcpSender.Instance().PathCalculated;
+
+            Console.WriteLine("distance, tx, ty, width");
         }
 
         void PacketReceived(object sender, SateliteImage e)
@@ -95,19 +97,16 @@ namespace SatGS.ViewModel
 
         ~ImageInspectorViewModel()
         {
-          
         }
 
         private Dictionary<string, BitmapSource> openCvResults;
-
+        StreamWriter file;
         public void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var listview = sender as ListView;
             listview.ScrollIntoView(e.AddedItems[0]);
 
             var img = e.AddedItems[0] as SateliteImage;
-
-            var file = new StreamWriter("degrees.txt", true);
 
             if (!openCvResults.ContainsKey(img.Path))
             {
@@ -117,23 +116,25 @@ namespace SatGS.ViewModel
 
                     var rect = contourRect.Value;
 
-                    var a = rect.Width;
+                    var w = rect.Width;
                     const double widthOfMeter = 15;
-                    const double w = 151;
                     const double distanceCalibration = 0.041;
+                    const double k = -2.308793456;
+                    const double beta = 640;
 
-                    var distance = -(a / w - 1) * widthOfMeter / a + distanceCalibration;
-                    Console.WriteLine($"d: {distance}, tx: {rect.X + rect.Width / 2}, ty: {rect.Y + rect.Height / 2}");
-                    /*
-                    if(distance > 0)
-                    {
-                        var translator = new PixelToCoordinateTranslator(
-                        rect.X + rect.Width / 2, rect.Y + rect.Height / 2, distance);
+                    var translator = new PixelToCoordinateTranslator(
+                        rect.X + rect.Width / 2, rect.Y + rect.Height / 2, 0);
 
-                        var result = translator.calcDegreeFromPixel();
-                        file.WriteLine($"d: {result[0]}\nphi: {result[1]}\ntheta: {result[2]}");
+                    var result = translator.calcDegreeFromPixel();
+                    //Console.WriteLine($"d: {result[0]}\nphi: {result[1]}\ntheta: {result[2]}");
 
-                    }*/
+
+                    // result[1] = phi
+                    var distance = (k / beta * w * Math.Sin(result[1] / 180 * Math.PI) - k - 1) * widthOfMeter / w;
+                    //var distance = -(a / w - 1) * widthOfMeter / a + distanceCalibration;
+                    Console.WriteLine($"{distance}, {rect.X + rect.Width / 2}, {rect.Y + rect.Height / 2}, {w}");
+                    
+                    
                     // 여기서 PathCalculated를 Invoke
 
                     //PathCalculated?.Invoke();
@@ -148,9 +149,6 @@ namespace SatGS.ViewModel
             {
                 CurrentImage = openCvResults[img.Path];
             }
-
-            file.Flush();
-            file.Close();
         }
 
         private void SaveOpenCVResult(string fileName, BitmapSource bitmapSource)
