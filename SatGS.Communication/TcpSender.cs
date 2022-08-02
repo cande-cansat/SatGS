@@ -55,7 +55,7 @@ namespace SatGS.Communication
             {
                 connector = connector,
                 bytesToSend = data.Length
-            });
+            }).AsyncWaitHandle.WaitOne();
         }
 
         private void SendCallback(IAsyncResult ar)

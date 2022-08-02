@@ -50,14 +50,6 @@ namespace SatGS.Communication
 
             receiveThreads = new List<Thread>();
 
-            /*
-            acceptThread = new Thread(AcceptCallback);
-            acceptThread.Start();
-            */
-
-            fileLen = 0;
-            receivingBuffer = new List<byte>();
-
             listener.BeginAcceptSocket(AcceptCallback, null);
         }
 
@@ -72,14 +64,6 @@ namespace SatGS.Communication
                 client.ReceiveBufferSize = ushort.MaxValue;
 
                 clients.Add(client);
-                /*
-                var state = new AsyncState()
-                {
-                    client = client,
-                    data = new byte[BufferSize]
-                };
-                client.BeginReceive(state.data, 0, 4, SocketFlags.None, ReceiveCallback, state);
-                */
 
                 var receiveThread = new Thread(ReceiveCallback);
                 receiveThreads.Add(receiveThread);
@@ -87,94 +71,6 @@ namespace SatGS.Communication
             }
 
             listener.BeginAcceptTcpClient(AcceptCallback, null);
-        }
-
-        private int fileLen { get; set; }
-        private int current { get; set; }
-
-        private List<byte> receivingBuffer { get; set; }
-
-        private void ReceiveCallback(IAsyncResult ar)
-        {
-            var state = (AsyncState)ar.AsyncState;
-
-            var client = state.client;
-
-            var received = client.EndReceive(ar);
-
-            if(fileLen == 0)
-            {
-                if (received == 4)
-                {
-                    current = 0;
-                    fileLen = BitConverter.ToInt32(state.data, 0);
-                }
-            }
-            else
-            {
-                current += received;
-                Enumerable.Range(0, received).ToList().ForEach(i => receivingBuffer.Add(state.data[i]));
-
-                if(fileLen <= current)
-                {
-                    client.Send(new byte[] { 0 }, 0, 1, SocketFlags.None);
-                    //PacketReceived?.Invoke(this, receivingBuffer.ToArray());
-
-                    PacketReceived?.Invoke(this, null);
-
-                    receivingBuffer.Clear();
-                    fileLen = 0;
-                }
-            }
-
-            if(fileLen != 0)
-                client.BeginReceive(state.data, 0, Math.Min(fileLen - current, BufferSize), SocketFlags.None, ReceiveCallback, state);
-            else
-                client.BeginReceive(state.data, 0, 4, SocketFlags.None, ReceiveCallback, state);
-        }
-
-        private void InvokeCallback(IAsyncResult ar)
-        {
-            PacketReceived?.EndInvoke(ar);
-        }
-
-        private void AcceptCallback()
-        {
-            while (listener.Server.IsBound)
-            {
-                try
-                {
-                    var client = listener.AcceptSocket();
-
-                    if (client == null) continue;
-
-                    clients.Add(client);
-                    var receiveThread = new Thread(ReceiveCallback);
-                    receiveThreads.Add(receiveThread);
-                    receiveThread.Start(client);
-                }
-                catch(ThreadAbortException)
-                {
-                    return;
-                }
-                catch(Exception e)
-                {
-                    MessageBox.Show(e.Message, e.GetType().ToString());
-                }
-            }
-        }
-
-        private void ReceiveCallback2(IAsyncResult ar)
-        {
-            var state = ar.AsyncState as AsyncState;
-
-            state.received = state.client.EndReceive(ar);
-        }
-
-        private void SendCallback2(IAsyncResult ar)
-        {
-            var client = ar.AsyncState as Socket;
-            client.EndSend(ar);
         }
 
         private void ReceiveCallback(object param)
@@ -193,32 +89,18 @@ namespace SatGS.Communication
                         };
 
                         lenState.received = client.Receive(lenState.data, 0, 4, SocketFlags.None);
-
                         if (lenState.received != 4) continue;
 
                         var fileLen = BitConverter.ToInt32(lenState.data, 0);
-
                         if (fileLen <= 0) continue;
 
-                        /*
-                        var imageState = new AsyncState
-                        {
-                            client = client,
-                            data = new byte[fileLen]
-                        };
-                        */
-
                         var current = 0;
-
-
                         List<byte> recvBuf = new List<byte>();
 
                         do
                         {
                             var toRecv = Math.Min(BufferSize, fileLen - current);
-
                             var buffer = new byte[toRecv];
-
                             var recv = client.Receive(buffer, 0, toRecv, SocketFlags.None);
 
                             Enumerable.Range(0, recv).ToList().ForEach(i => recvBuf.Add(buffer[i]));

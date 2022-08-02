@@ -2,19 +2,10 @@
 using SatGS.SateliteData;
 using SatGS.Communication;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-<<<<<<< Updated upstream
-=======
 using System.Windows.Controls;
-using System.Windows.Data;
->>>>>>> Stashed changes
-
 namespace SatGS.ViewModel
 {
     internal class SerialMonitoringWindowViewModel : NotifyPropertyChanged
@@ -45,12 +36,7 @@ namespace SatGS.ViewModel
             Application.Current.Dispatcher.Invoke(() =>
             {
                 SerialDataList.Add(status);
-<<<<<<< Updated upstream
-                SelectedIndex = SerialDataList.Count - 1;
-                
-=======
                 SelectedItem = status;
->>>>>>> Stashed changes
             });
         }
 

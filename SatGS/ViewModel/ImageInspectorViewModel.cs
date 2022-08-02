@@ -60,13 +60,7 @@ namespace SatGS.ViewModel
                 Directory.CreateDirectory("Images");
             else
             {
-                string[] directories = File.ReadAllLines(
-#if DEBUG
-                    "../../../ImagePath.cfg"
-#else
-                    "ImagePath.cfg"
-#endif
-                    );
+                string[] directories = File.ReadAllLines("ImagePath.cfg");
 
                 foreach(var dirPath in directories)
                 {
@@ -91,47 +85,11 @@ namespace SatGS.ViewModel
 
         void PacketReceived(object sender, SateliteImage e)
         {
-            /*
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                Images.Add(image);
-                SelectedIndex = Images.Count - 1;
-            });
-            */
-            /*
-            Application.Current.Dispatcher.BeginInvoke((Action) (() => {
-                
-            }));
-            */
             Application.Current.Dispatcher.InvokeAsync(() =>
             {
                 Images.Add(e);
                 SelectedIndex = Images.Count - 1;
             });
-
-            PathCalculator calculator = new PathCalculator();
-
-            // 여기서 이미지 내의 물체의 path를 구한다.
-
-            /*{
-                var coordinates = calculator.calcPath();
-
-                var size = coordinates.Count * 3 * 4;
-                var buffer = new byte[size];
-                var offset = 0;
-                foreach (var coordinate in coordinates)
-                {
-                    var bItem1 = BitConverter.GetBytes(coordinate.item1);
-                    var bItem2 = BitConverter.GetBytes(coordinate.item2);
-                    var bItem3 = BitConverter.GetBytes(coordinate.item3);
-
-                    bItem1.CopyTo(buffer, offset); offset += 4;
-                    bItem2.CopyTo(buffer, offset); offset += 4;
-                    bItem3.CopyTo(buffer, offset); offset += 4;
-                }
-
-                PathCalculated?.Invoke(this, buffer);
-            }*/
         }
 
 
@@ -148,32 +106,64 @@ namespace SatGS.ViewModel
             listview.ScrollIntoView(e.AddedItems[0]);
 
             var img = e.AddedItems[0] as SateliteImage;
-            
+
+            var file = new StreamWriter("degrees.txt", true);
+
             if (!openCvResults.ContainsKey(img.Path))
             {
-                var detected = objectDetector.DetectContourOfRedObjects(img.Path);
-                if (detected == null) return;
-
-                openCvResults.Add(img.Path, detected);
-                CurrentImage = openCvResults[img.Path];
-
-
-                // 이 부분에서 OpenCV Output image를 파일로 출력해야 함
-
-                var opencvPath = "./Images/OpenCV";
-                if (!Directory.Exists(opencvPath))
-                    Directory.CreateDirectory(opencvPath);
-
-                using(var stream = new FileStream($"{opencvPath}/cv_{img.FileName}", FileMode.Create))
+                if (objectDetector.DetectContourOfRedObjects(img.Path, out var contourRect, out var bitmapSource))
                 {
-                    var encoder = new JpegBitmapEncoder();
-                    encoder.Frames.Add(BitmapFrame.Create(openCvResults[img.Path]));
-                    encoder.Save(stream);
+                    // distance = -(a * sin(theta) / w - 1)
+
+                    var rect = contourRect.Value;
+
+                    var a = rect.Width;
+                    const double widthOfMeter = 15;
+                    const double w = 151;
+                    const double distanceCalibration = 0.041;
+
+                    var distance = -(a / w - 1) * widthOfMeter / a + distanceCalibration;
+                    Console.WriteLine($"d: {distance}, tx: {rect.X + rect.Width / 2}, ty: {rect.Y + rect.Height / 2}");
+                    /*
+                    if(distance > 0)
+                    {
+                        var translator = new PixelToCoordinateTranslator(
+                        rect.X + rect.Width / 2, rect.Y + rect.Height / 2, distance);
+
+                        var result = translator.calcDegreeFromPixel();
+                        file.WriteLine($"d: {result[0]}\nphi: {result[1]}\ntheta: {result[2]}");
+
+                    }*/
+                    // 여기서 PathCalculated를 Invoke
+
+                    //PathCalculated?.Invoke();
                 }
+
+                openCvResults.Add(img.Path, bitmapSource);
+                CurrentImage = bitmapSource;
+
+                SaveOpenCVResult(img.FileName, bitmapSource);
             }
             else
             {
                 CurrentImage = openCvResults[img.Path];
+            }
+
+            file.Flush();
+            file.Close();
+        }
+
+        private void SaveOpenCVResult(string fileName, BitmapSource bitmapSource)
+        {
+            var opencvPath = "./Images/OpenCV";
+            if (!Directory.Exists(opencvPath))
+                Directory.CreateDirectory(opencvPath);
+
+            using (var stream = new FileStream($"{opencvPath}/cv_{fileName}", FileMode.Create))
+            {
+                var encoder = new JpegBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+                encoder.Save(stream);
             }
         }
     }
