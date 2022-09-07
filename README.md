@@ -1,6 +1,5 @@
 # SatGS - Can Satelite Ground System
 
-## 개요
 Ground station software for receiving data from Can satellites
 
 <br/>
